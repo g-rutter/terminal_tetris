@@ -22,7 +22,7 @@ class Tetris {
 
             while(true) {
                 if(!active_piece) {
-
+                    // Create a new active piece
                 }
                 // move piece down
                 // 
