@@ -9,7 +9,7 @@ class TetrisView {
             initscr();
         };
 
-        void redraw(const std::optional<ActivePiece>& active_piece) const {
+        void update_grid(const std::optional<ActivePiece>& active_piece) const {
             GridCoord grid_coods;
             char ch;
             for (size_t i=0; i<grid.n_squares; i++){
@@ -18,7 +18,8 @@ class TetrisView {
                 else ch = '.';
 
                 grid_coods = grid.to_2D(i);
-                for(size_t i=0; i<stretch; i++){
+
+                for(size_t i=0; i<stretch; i++){ // Tile out the selected character if stretch != 1
                     for(size_t j=0; j<stretch; j++){
                         mvwaddch(stdscr, (grid_coods.y * stretch) + j,(grid_coods.x * stretch) + i, ch);
                     }
@@ -29,7 +30,20 @@ class TetrisView {
 
         void update_score(const int score, const int cycle_time_ms) const {
             mvprintw(grid.grid_size.y + 1, 0, "Score: %d", score);
-            mvprintw(grid.grid_size.y + 2, 0, "Falls every: %d ms", cycle_time_ms);
+            mvprintw(grid.grid_size.y + 2, 0, "Time per drop: %d ms", cycle_time_ms);
+        }
+
+        void update_highscore(const int score) const {
+            mvprintw(grid.grid_size.y + 3, 0, "Highscore: %d", score);
+        }
+
+        void show_game_over() const {
+            mvprintw(grid.grid_size.y, 0, "Game over: (r)estart or (q)uit");
+        }
+
+        void hide_game_over() const {
+            move(grid.grid_size.y, 0);
+            clrtoeol();
         }
 
     private:

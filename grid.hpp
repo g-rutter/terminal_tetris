@@ -29,6 +29,10 @@ struct Grid{
         }
     }
 
+    void zero() {
+        occupied = std::vector<bool>(n_squares, false);
+    }
+
     const GridSize grid_size;
     const int n_squares;
     std::vector<bool> occupied = std::vector<bool>(n_squares, false);

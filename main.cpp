@@ -11,20 +11,46 @@
 #include "grid.hpp"
 
 using namespace std;
-using milliseconds = std::chrono::duration<int, std::milli>;
 
 class Tetris {
     public:
         Tetris(Grid& grid) : grid{grid}, tetrisview{grid, 1} {};
 
-        void run() {
+        void start() {
+            int highscore = 0;
+            int score;
+            do {
+                score = run();
+                highscore = score > highscore? score : highscore;
+                tetrisview.update_highscore(highscore);
+                
+            } while(restart_input());
+        }
+
+        bool restart_input() {
+            nodelay(stdscr, FALSE);
+            while(true) {
+                switch (getch()){
+                    case 'r':
+                        return true;
+                    case 'q':
+                        return false;
+                }
+            }
+        }
+
+        int run() {
             int score = 0;
+            grid.zero();
+            int cycle_time_ms = start_cycle_time_ms;
+            active_piece.reset();
+            tetrisview.hide_game_over();
 
             while(true) {
                 if(!active_piece) {
                     active_piece.emplace(grid);
                     tetrisview.update_score(score, cycle_time_ms);
-                    if(!active_piece->valid_state()) break;
+                    if(!active_piece->valid_state()) break; // New piece being immediately invalid marks end of game.
                 }
                 active_piece->down();
 
@@ -35,13 +61,12 @@ class Tetris {
                     cycle_time_ms *= 0.99;
                 }
 
-                tetrisview.redraw(active_piece);
-                if (active_piece.has_value()) input_loop();
+                tetrisview.update_grid(active_piece);
+                if (active_piece.has_value()) input_loop(cycle_time_ms);
             }
-            printf("Score: %d", score);
-            printf("\nGame over.");
+            tetrisview.show_game_over();
+            return score;
         }
-
 
     int remove_rows() {
         size_t i_low, i_high;
@@ -62,41 +87,38 @@ class Tetris {
         return score;
     }
 
-        void input_loop() {
+        void input_loop(int cycle_time_ms) {
             const chrono::time_point start = chrono::steady_clock::now();
             int elapsed;
             bool take_input = true;
             nodelay(stdscr, TRUE);
             keypad(stdscr, TRUE);
             do {
-                switch (getch()) {
+                int ch = getch();
+                switch (ch) {
                     case 'a':
                     case KEY_LEFT:
                         active_piece->left();
-                        tetrisview.redraw(active_piece);
                         break;
                     case 'd':
                     case KEY_RIGHT:
                         active_piece->right();
-                        tetrisview.redraw(active_piece);
                         break;
                     case 'w':
                     case KEY_UP:
                         active_piece->rotate();
-                        tetrisview.redraw(active_piece);
                         break;
                     case 's':
                     case KEY_DOWN:
                         active_piece->down();
-                        tetrisview.redraw(active_piece);
                         take_input = !active_piece->landed;
                         break;
                     case ' ':
                         active_piece->fall();
-                        tetrisview.redraw(active_piece);
                         take_input = false;
                         break;
                 }
+                if(ch != ERR) tetrisview.update_grid(active_piece);
                 chrono::time_point end = chrono::steady_clock::now();
                 elapsed = chrono::duration_cast<chrono::milliseconds>(end - start).count();
             } while (take_input && elapsed < cycle_time_ms);
@@ -105,7 +127,7 @@ class Tetris {
     private:
         Grid& grid;
         TetrisView tetrisview;        
-        int cycle_time_ms{500};
+        int start_cycle_time_ms{500};
         std::optional<ActivePiece> active_piece{};
 };
 
@@ -114,5 +136,5 @@ int main(){
     GridSize grid_size{10, 15};
     Grid grid(grid_size);
     Tetris tetris{grid};
-    tetris.run();
+    tetris.start();
 }
