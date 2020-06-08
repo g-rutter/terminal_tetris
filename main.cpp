@@ -3,29 +3,25 @@
 #include <chrono>
 #include <vector>
 #include <cstdio>
+#include <optional>
 
 #include "pieces.hpp"
 #include "view.hpp"
+#include "grid.hpp"
 
 using milliseconds = std::chrono::duration<int, std::milli>;
 
 
 class Tetris {
     public:
-        Tetris() : Tetris(GridSize{5, 10}) {};
-        Tetris(const GridSize grid_size) : grid_size{grid_size}, tetrisview{grid_size} {
-            occupied = std::vector<bool>(grid_size.y * grid_size.x, false);
-        };
+        Tetris(Grid& grid) : grid{grid}, tetrisview{grid} {};
 
         void run() {
-
-
             while(true) {
-                if(!active_piece) {
-                    // Create a new active piece
-                }
-                // move piece down
-                // 
+                if(!active_piece) active_piece.emplace(grid.grid_size);
+                active_piece->fall();
+
+
                 // if (piece landed)
                 //     update occupied
                 //     set active to null
@@ -33,23 +29,22 @@ class Tetris {
                 //     check if game is lost
                 //     check if line can be removed, 
 
-                tetrisview.redraw(occupied, active);
+                tetrisview.redraw(*active_piece);
                 std::this_thread::sleep_for(cycle_time);
             }
         }
 
     private:
-        const GridSize grid_size;
-        TetrisView tetrisview;
-        // std::vector<Tetra> sediment;
-        std::vector<bool> occupied;
+        const Grid grid;
+        TetrisView tetrisview;        
         const milliseconds cycle_time{1000};
-        std::optional<Piece> active_piece{};
-        Piece active2_piece{};
+        std::optional<ActivePiece> active_piece{};
 };
 
 
 int main(){
-    Tetris tetris{};
+    GridSize grid_size{10, 20};
+    Grid grid(grid_size);
+    Tetris tetris{grid};
     tetris.run();
 }
