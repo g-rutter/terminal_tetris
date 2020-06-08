@@ -15,6 +15,8 @@ Run `./tetris`.
 
 Keys are WASD or the arrows, and space to drop the piece.
 
+Big font size encouraged.
+
 # My terminal is messed up after playing it.
 
 That's an `ncurses` thing, type `reset`.
