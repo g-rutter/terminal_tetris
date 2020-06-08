@@ -5,7 +5,7 @@ This works for me:
 
 `clang++ -std=c++17 -lncurses -o tetris main.cpp`
 
-If you don't have `clang++`, you might have `gcc++`.
+If you don't have `clang++`, you might have `g++`.
 
 You'll need `ncurses` installed for linking.
 
