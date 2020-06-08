@@ -22,3 +22,10 @@ Big font size encouraged.
 # My terminal is messed up after playing it.
 
 That's an `ncurses` thing, type `reset`.
+
+# To do
+
+* Command-line options: Start speed, grid size, (whether to show the next piece), speedup rate.
+* Proper scoring?
+* Colour?
+* Show the next piece
