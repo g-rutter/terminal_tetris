@@ -9,6 +9,7 @@ struct ActivePiece {
           sediment_grid{sediment_grid},
           global_grid{sediment_grid.grid_size, std::vector<bool>(sediment_grid.n_squares, false)}
     {
+        x_loc = (global_grid.grid_size.x - shape.width) / 2;
         update_global_grid();
     };
     ActivePiece(const Grid& grid) : ActivePiece(Shapes::random_shape(), grid) {};

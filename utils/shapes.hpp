@@ -91,10 +91,8 @@ namespace Shapes {
 
     const std::vector<Shape> all_shapes = {L, T, BackwardsL, Box, I};
     
- 
     Shape random_shape() {
         size_t n_shapes = all_shapes.size();
         return all_shapes[rand() % n_shapes];
-
     }
 }
