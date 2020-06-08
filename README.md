@@ -1,5 +1,7 @@
 Tetris for the terminal, implemented in C++
 
+![alt text](tetris_screenshot.png)
+
 # Setup
 This works for me:
 
