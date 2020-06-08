@@ -72,7 +72,24 @@ namespace Shapes {
                             {x, x,
                              x, x}}, 2);
 
-    const std::vector<Shape> all_shapes = {L, T, BackwardsL, Box};
+    const static Shape I({{o, x, o, o,
+                           o, x, o, o,
+                           o, x, o, o,
+                           o, x, o, o},
+                          {o, o, o, o,
+                           o, o, o, o,
+                           x, x, x, x,
+                           o, o, o, o},
+                          {o, x, o, o,
+                           o, x, o, o,
+                           o, x, o, o,
+                           o, x, o, o},
+                          {o, o, o, o,
+                           o, o, o, o,
+                           x, x, x, x,
+                           o, o, o, o}}, 4);
+
+    const std::vector<Shape> all_shapes = {L, T, BackwardsL, Box, I};
     
  
     Shape random_shape() {

@@ -32,14 +32,13 @@ class Tetris {
                     grid.absorb(active_piece->global_grid);
                     active_piece.reset();
                     score += remove_rows();
-                    // todo: check if row can be removed
                 }
 
                 tetrisview.redraw(active_piece);
                 if (active_piece.has_value()) input_loop();
             }
             printf("Score: %d", score);
-            printf("\nHeh, nothin personnel kid... better luck next time");
+            printf("\nGame over.");
         }
 
 
