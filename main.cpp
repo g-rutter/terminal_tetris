@@ -15,7 +15,7 @@ using milliseconds = std::chrono::duration<int, std::milli>;
 
 class Tetris {
     public:
-        Tetris(Grid& grid) : grid{grid}, tetrisview{grid} {};
+        Tetris(Grid& grid) : grid{grid}, tetrisview{grid, 1} {};
 
         void run() {
             int score = 0;
@@ -23,7 +23,7 @@ class Tetris {
             while(true) {
                 if(!active_piece) {
                     active_piece.emplace(grid);
-                    tetrisview.update_score(score);
+                    tetrisview.update_score(score, cycle_time_ms);
                     if(!active_piece->valid_state()) break;
                 }
                 active_piece->down();
@@ -32,6 +32,7 @@ class Tetris {
                     grid.absorb(active_piece->global_grid);
                     active_piece.reset();
                     score += remove_rows();
+                    cycle_time_ms *= 0.99;
                 }
 
                 tetrisview.redraw(active_piece);
@@ -104,7 +105,7 @@ class Tetris {
     private:
         Grid& grid;
         TetrisView tetrisview;        
-        const int cycle_time_ms{500};
+        int cycle_time_ms{500};
         std::optional<ActivePiece> active_piece{};
 };
 

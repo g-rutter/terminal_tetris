@@ -4,7 +4,7 @@
 
 class TetrisView {
     public:
-        TetrisView(const Grid& grid) : grid{grid}
+        TetrisView(const Grid& grid, const int stretch) : grid{grid}, stretch{stretch}
         {
             initscr();
         };
@@ -18,15 +18,21 @@ class TetrisView {
                 else ch = '.';
 
                 grid_coods = grid.to_2D(i);
-                mvwaddch(stdscr, grid_coods.y, grid_coods.x, ch);
+                for(size_t i=0; i<stretch; i++){
+                    for(size_t j=0; j<stretch; j++){
+                        mvwaddch(stdscr, (grid_coods.y * stretch) + j,(grid_coods.x * stretch) + i, ch);
+                    }
+                }
             }
             wrefresh(stdscr);
         }
 
-        void update_score(const int score) {
+        void update_score(const int score, const int cycle_time_ms) const {
             mvprintw(grid.grid_size.y + 1, 0, "Score: %d", score);
+            mvprintw(grid.grid_size.y + 2, 0, "Falls every: %d ms", cycle_time_ms);
         }
 
     private:
         const Grid& grid;
+        const int stretch;
 };
