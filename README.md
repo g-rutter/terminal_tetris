@@ -3,11 +3,18 @@ Tetris for the terminal, implemented in C++
 # Setup
 This works for me:
 
-`clang++ -std=c++17 -lncurses main.cpp`
+`clang++ -std=c++17 -lncurses -o tetris main.cpp`
 
-You'll need ncurses installed.
+If you don't have `clang++`, you might have `gcc++`.
+
+You'll need `ncurses` installed for linking.
 
 # Playing
-Run `./a.out`.
+
+Run `./tetris`.
 
 Keys are WASD or the arrows, and space to drop the piece.
+
+# My terminal is messed up after playing it.
+
+That's an `ncurses` thing, type `reset`.
