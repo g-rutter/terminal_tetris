@@ -1,5 +1,5 @@
 #pragma once
-#include "pieces.hpp"
+#include "active_piece.hpp"
 
 
 class TetrisView {
@@ -9,17 +9,23 @@ class TetrisView {
             initscr();
         };
 
-        void redraw(const ActivePiece& active_piece) const {
-            int x, y;
+        void redraw(const std::optional<ActivePiece>& active_piece) const {
+            GridCoord grid_coods;
             char ch;
             for (size_t i=0; i<grid.n_squares; i++){
-                x = i % grid.grid_size.x;
-                y = i / grid.grid_size.x;
-                ch = grid.sediment[i] ? 'x' : 'o';
-                mvwaddch(stdscr, x, y, ch);
+                if (grid.occupied[i]) ch = '=';
+                else if (active_piece.has_value() && active_piece->global_grid.occupied[i]) ch = '#';
+                else ch = '.';
+
+                grid_coods = grid.to_2D(i);
+                mvwaddch(stdscr, grid_coods.y, grid_coods.x, ch);
             }
             wrefresh(stdscr);
-        }    
+        }
+
+        void update_score(const int score) {
+            mvprintw(grid.grid_size.y + 1, 0, "Score: %d", score);
+        }
 
     private:
         const Grid& grid;
