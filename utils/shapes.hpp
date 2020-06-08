@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 #include <math.h>
 
@@ -24,75 +25,74 @@ namespace Shapes {
         int current_form = 0;
     };
 
-    const static Shape L({{o, x, o,
-                           o, x, o,
-                           o, x, x},
-                          {o, o, o,
-                           x, x, x,
-                           x, o, o},
-                          {x, x, o,
-                           o, x, o,
-                           o, x, o},
-                          {o, o, x,
-                           x, x, x,
-                           o, o, o}}, 3);
+    const Shape L({{o, x, o,
+                    o, x, o,
+                    o, x, x},
+                   {o, o, o,
+                    x, x, x,
+                    x, o, o},
+                   {x, x, o,
+                    o, x, o,
+                    o, x, o},
+                   {o, o, x,
+                    x, x, x,
+                    o, o, o}}, 3);
 
-    const static Shape T({{o, x, o,
-                           x, x, x,
-                           o, o, o},
-                          {o, x, o,
-                           o, x, x,
-                           o, x, o},
-                          {o, o, o,
-                           x, x, x,
-                           o, x, o},
-                          {o, x, o,
-                           x, x, o,
-                           o, x, o}}, 3);
+    const Shape T({{o, x, o,
+                    x, x, x,
+                    o, o, o},
+                   {o, x, o,
+                    o, x, x,
+                    o, x, o},
+                   {o, o, o,
+                    x, x, x,
+                    o, x, o},
+                   {o, x, o,
+                    x, x, o,
+                    o, x, o}}, 3);
 
-    const static Shape BackwardsL({{o, x, o,
-                                    o, x, o,
-                                    x, x, o},
-                                   {x, o, o,
-                                    x, x, x,
-                                    o, o, o},
-                                   {o, x, x,
-                                    o, x, o,
-                                    o, x, o},
-                                   {o, o, o,
-                                    x, x, x,
-                                    o, o, x}}, 3);
+    const Shape BackwardsL({{o, x, o,
+                             o, x, o,
+                             x, x, o},
+                            {x, o, o,
+                             x, x, x,
+                             o, o, o},
+                            {o, x, x,
+                             o, x, o,
+                             o, x, o},
+                            {o, o, o,
+                             x, x, x,
+                             o, o, x}}, 3);
 
-    const static Shape Box({{x, x,
-                             x, x},
-                            {x, x,
-                             x, x},
-                            {x, x,
-                             x, x},
-                            {x, x,
-                             x, x}}, 2);
+    const Shape Box({{x, x,
+                      x, x},
+                     {x, x,
+                      x, x},
+                     {x, x,
+                      x, x},
+                     {x, x,
+                      x, x}}, 2);
 
-    const static Shape I({{o, x, o, o,
-                           o, x, o, o,
-                           o, x, o, o,
-                           o, x, o, o},
-                          {o, o, o, o,
-                           o, o, o, o,
-                           x, x, x, x,
-                           o, o, o, o},
-                          {o, x, o, o,
-                           o, x, o, o,
-                           o, x, o, o,
-                           o, x, o, o},
-                          {o, o, o, o,
-                           o, o, o, o,
-                           x, x, x, x,
-                           o, o, o, o}}, 4);
+    const Shape I({{o, x, o, o,
+                    o, x, o, o,
+                    o, x, o, o,
+                    o, x, o, o},
+                   {o, o, o, o,
+                    o, o, o, o,
+                    x, x, x, x,
+                    o, o, o, o},
+                   {o, x, o, o,
+                    o, x, o, o,
+                    o, x, o, o,
+                    o, x, o, o},
+                   {o, o, o, o,
+                    o, o, o, o,
+                    x, x, x, x,
+                    o, o, o, o}}, 4);
 
-    const std::vector<Shape> all_shapes = {L, T, BackwardsL, Box, I};
+    const std::vector all_shapes = {L, T, BackwardsL, Box, I};
     
-    Shape random_shape() {
-        size_t n_shapes = all_shapes.size();
-        return all_shapes[rand() % n_shapes];
+    int random_shape() {
+        return rand() % all_shapes.size();
     }
 }

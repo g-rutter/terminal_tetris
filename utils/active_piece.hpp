@@ -12,7 +12,6 @@ struct ActivePiece {
         x_loc = (global_grid.grid_size.x - shape.width) / 2;
         update_global_grid();
     };
-    ActivePiece(const Grid& grid) : ActivePiece(Shapes::random_shape(), grid) {};
 
     void down() {
         y_loc++;

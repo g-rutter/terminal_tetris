@@ -11,12 +11,13 @@
 #include "active_piece.hpp"
 #include "view.hpp"
 #include "grid.hpp"
+#include "shapes.hpp"
 
 using namespace std;
 
 class Tetris {
     public:
-        Tetris(Grid& grid) : grid{grid}, tetrisview{grid, 1} {};
+        Tetris(Grid& grid) : grid{grid}, tetrisview{grid} {};
 
         void start() {
             int highscore = 0;
@@ -25,7 +26,6 @@ class Tetris {
                 score = run();
                 highscore = score > highscore? score : highscore;
                 tetrisview.update_highscore(highscore);
-                
             } while(restart_input());
         }
 
@@ -48,10 +48,16 @@ class Tetris {
             active_piece.reset();
             tetrisview.hide_game_over();
 
+            int next_shape = Shapes::random_shape();
+
             while(true) {
                 if(!active_piece) {
-                    active_piece.emplace(grid);
+                    active_piece.emplace(Shapes::all_shapes[next_shape], grid);
+                    next_shape = Shapes::random_shape();
+
                     tetrisview.update_score(score, cycle_time_ms);
+                    tetrisview.update_next_shape(Shapes::all_shapes[next_shape]);
+                    
                     if(!active_piece->valid_state()) break; // New piece being immediately invalid marks end of game.
                 }
                 active_piece->down();
