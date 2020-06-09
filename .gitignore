@@ -2,3 +2,4 @@
 *.out
 tetris
 .DS_Store
+*.code-workspace
