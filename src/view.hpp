@@ -13,8 +13,8 @@ class TetrisView {
             GridCoord grid_coods;
             char ch;
             for (size_t i=0; i<grid.n_squares; i++){
-                if (grid.occupied[i]) ch = '=';
-                else if (active_piece.has_value() && active_piece->global_grid.occupied[i]) ch = '#';
+                if (grid.occupied.at(i)) ch = '=';
+                else if (active_piece.has_value() && active_piece->global_grid.occupied.at(i)) ch = '#';
                 else ch = '.';
 
                 grid_coods = grid.to_2D(i);
@@ -34,20 +34,20 @@ class TetrisView {
         }
 
         void update_next_shape(const Shapes::Shape& shape) const {
-            int text_y = 2;
-            int shape_y = text_y + 2;
+            const GridCoord text_loc{grid.grid_size.x + 1, 2};
+            const GridCoord shape_loc{text_loc.x + 2, text_loc.y + 2};
 
-            mvprintw(text_y, grid.grid_size.x + 1, "Next up:");
-            for(int i=0; i<5; i++) {
-                move(shape_y + i, grid.grid_size.x + 1);
+            mvprintw(text_loc.y, text_loc.x, "Next up:");
+            for(size_t i=0; i<5; i++) {
+                move(shape_loc.y + i, grid.grid_size.x + 1);
                 clrtoeol();
             }
-            int x, y;
-            auto& shape_vector = shape.data();
-            for (size_t i=0; i<shape_vector.size(); i++){
-                x = grid.grid_size.x + 3 + (i % shape.width);
-                y = shape_y + (i / shape.width);
-                if (shape_vector[i]) mvwaddch(stdscr, y, x, '#');
+
+            GridCoord global_coords;
+            const auto& shape_grid = *shape.grid;
+            for (auto &&i : shape_grid.true_indices()){
+                global_coords = shape_grid.to_2D(i) + shape_loc;
+                mvwaddch(stdscr, global_coords.y, global_coords.x, '#');
             }
         }
 

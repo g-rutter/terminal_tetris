@@ -61,14 +61,14 @@ struct ActivePiece {
         std::fill(global_grid.occupied.begin(), global_grid.occupied.end(), false);
 
         for(size_t local_i=0; local_i< shape.size; local_i++) {
-            if(shape.data()[local_i]) {
+            if(shape.grid->occupied.at(local_i)) {
                 global_x = x_loc + (local_i % shape.width);
                 global_y = y_loc + (local_i / shape.width);
                 global_i = (global_y * sediment_grid.grid_size.x) + global_x;
                 if (global_i >= global_grid.n_squares) return false; // Fallen off bottom
                 else if (global_x < 0 || global_x >= global_grid.grid_size.x) return false ; // Off the sides
-                else if (sediment_grid.occupied[global_i]) return false; // Piece overlaps with sediment (previous pieces)
-                global_grid.occupied[global_i] = true;
+                else if (sediment_grid.occupied.at(global_i)) return false; // Piece overlaps with sediment (previous pieces)
+                global_grid.occupied.at(global_i) = true;
             }
         }
         return true;
