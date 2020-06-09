@@ -29,7 +29,6 @@ namespace Shapes {
         }
 
         static Grid rotate90(Grid current){
-            // Untested on non-square grids!!
             const GridCoord centre{current.grid_size.x, current.grid_size.y};
             const GridCoord inverted_centre{current.grid_size.y, current.grid_size.x};
             Grid rotated{{current.grid_size.y, current.grid_size.x}, current.occupied};
