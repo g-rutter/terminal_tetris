@@ -62,26 +62,35 @@ struct ActivePiece {
         // Update the global grid giving the current piece's occupancy.
         // bool return code denotes VALIDITY OF STATE.
         // Update does not complete if state is invalid.
-        int global_i, sediment_i;
         std::fill(global_grid.occupied.begin(), global_grid.occupied.end(), false);
-        std::fill(shadow_grid.occupied.begin(), shadow_grid.occupied.end(), false);
-        GridCoord global_xy, sediment_xy;
+        bool valid = update_grid(sediment_grid, global_grid, shape, shape_loc);
+
+        if (valid) {
+            // shadow grid
+            GridCoord shadow_loc = {shape_loc.x, shape_loc.y + 1};
+            while(update_grid(sediment_grid, shadow_grid, shape, shadow_loc)) {
+                shadow_loc.y++;
+            }
+            shadow_loc.y--;
+            std::fill(shadow_grid.occupied.begin(), shadow_grid.occupied.end(), false);
+            if (shadow_loc.y - 3 > shape_loc.y) { // Don't show shadow if it might be visually distracting.
+                update_grid(sediment_grid, shadow_grid, shape, shadow_loc);
+            }
+        } 
+        return valid;
+    }
+    
+    bool update_grid(const Grid& sediment_grid, Grid& update_grid, const Shapes::Shape& shape, const GridCoord& shape_loc){
+        GridCoord global_xy;
+        int global_i;
 
         for(size_t& local_i : shape.grid->true_indices()){
             global_xy = shape.grid->to_2D(local_i) + shape_loc;
-            global_i = global_grid.to_1D(global_xy);
-            if (global_i >= global_grid.n_squares) return false; // Fallen off bottom
-            else if (global_xy.x < 0 || global_xy.x >= global_grid.grid_size.x) return false ; // Off the sides
+            global_i = update_grid.to_1D(global_xy);
+            if (global_i >= update_grid.n_squares) return false; // Fallen off bottom
+            else if (global_xy.x < 0 || global_xy.x >= update_grid.grid_size.x) return false ; // Off the sides
             else if (sediment_grid.occupied.at(global_i)) return false; // Piece overlaps with sediment (previous pieces)
-            global_grid.occupied.at(global_i) = true;
-
-            // Put shadow straight on top of sediment directly below shape.
-            sediment_xy = {global_xy.x, sediment_grid.grid_size.y};
-            do {
-                sediment_xy.y--;
-                sediment_i = sediment_grid.to_1D(sediment_xy);
-            } while(sediment_grid.occupied.at(sediment_i));
-            shadow_grid.occupied.at(sediment_i) = true;
+            update_grid.occupied.at(global_i) = true;
         }
         return true;
     }

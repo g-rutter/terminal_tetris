@@ -7,58 +7,92 @@ class TetrisView {
         TetrisView(const Grid& grid) : grid{grid}
         {
             initscr();
+            curs_set(0);
         };
 
         void update_grid(const std::optional<ActivePiece>& active_piece) const {
-            GridCoord grid_coods;
+            GridCoord grid_coords;
             char ch;
+            size_t effect;
+            bool is_border;
             for (size_t i=0; i<grid.n_squares; i++){
-                if (grid.occupied.at(i)) ch = '=';
+                effect = A_NORMAL;
+                grid_coords = grid.to_2D(i);
+                if (grid.occupied.at(i)) {
+                    effect = A_REVERSE;
+                    ch = ' ';
+                }
                 else if (active_piece.has_value() && active_piece->global_grid.occupied.at(i)) ch = '#';
-                // else if (active_piece.has_value() && active_piece->shadow_grid.occupied.at(i)) ch = '~';
-                else ch = '.';
-
-                grid_coods = grid.to_2D(i);
-
-                mvwaddch(stdscr, grid_coods.y, grid_coods.x, ch);
+                else if (active_piece.has_value() && active_piece->shadow_grid.occupied.at(i)) ch = 'x';
+                else {
+                    is_border = (grid_coords.x == 0
+                                 || grid_coords.x + 1 == grid.grid_size.x
+                                 || grid_coords.y + 1 == grid.grid_size.y);
+                    effect = is_border ? A_NORMAL : A_INVIS;
+                    ch = '.';
+                }
+                write_char(ch, grid_coords.x, grid_coords.y, effect);
             }
             wrefresh(stdscr);
         }
 
         void update_score(const int score, const int cycle_time_ms) const {
-            mvprintw(grid.grid_size.y + 1, 0, "Score: %d", score);
-            mvprintw(grid.grid_size.y + 2, 0, "Drop every: %d ms", cycle_time_ms);
+            clear_line(0, grid.grid_size.y + 1);
+            clear_line(0, grid.grid_size.y + 2);
+            char score_str[100];
+            sprintf(score_str, "Score: %d\nDrop every: %d ms", score, cycle_time_ms);
+            write_line(score_str, 0, grid.grid_size.y + 1, A_NORMAL);
         }
 
         void update_highscore(const int score) const {
-            mvprintw(grid.grid_size.y + 3, 0, "Highscore: %d", score);
+            char highscore_str[100];
+            sprintf(highscore_str, "Highscore: %d", score);
+            write_line(highscore_str, 0, grid.grid_size.y + 3, A_NORMAL);
         }
 
         void update_next_shape(const Shapes::Shape& shape) const {
             const GridCoord text_loc{grid.grid_size.x + 1, 2};
             const GridCoord shape_loc{text_loc.x + 2, text_loc.y + 2};
 
-            mvprintw(text_loc.y, text_loc.x, "Next up:");
-            for(size_t i=0; i<5; i++) {
-                move(shape_loc.y + i, grid.grid_size.x + 1);
-                clrtoeol();
-            }
+            write_line("Next up:", text_loc.x, text_loc.y, A_NORMAL);
+            for(size_t i=0; i<5; i++) clear_line(grid.grid_size.x + 1, shape_loc.y + i);
 
             GridCoord global_coords;
             const auto& shape_grid = *shape.grid;
             for (auto &&i : shape_grid.true_indices()){
                 global_coords = shape_grid.to_2D(i) + shape_loc;
-                mvwaddch(stdscr, global_coords.y, global_coords.x, '#');
+                write_char('#', global_coords.x, global_coords.y, A_NORMAL);
             }
         }
 
         void show_game_over() const {
-            mvprintw(grid.grid_size.y, 0, "Game over: (r)estart or (q)uit");
+            write_line("Game over: (r)estart or (q)uit", 0, grid.grid_size.y, A_BOLD);
         }
 
         void hide_game_over() const {
-            move(grid.grid_size.y, 0);
+            clear_line(0, grid.grid_size.y);
+            write_line("", 0, grid.grid_size.y, A_NORMAL);
+        }
+
+        void write_char(const char ch, const int x, const int y, const size_t effect) const {
+            attroff(A_INVIS);
+            attron(effect);
+            mvwaddch(stdscr, y, x, ch);
+            attroff(effect);
+            attron(A_INVIS); // Stop user input appearing
+        }
+
+        void clear_line(const int x, const int y) const {
+            move(y, x);
             clrtoeol();
+        }
+
+        void write_line(const char* str, const int x, const int y, const size_t effect) const {
+            attroff(A_INVIS);
+            attron(effect);
+            mvprintw(y, x, str);
+            attroff(effect);
+            attron(A_INVIS); // Stop user input appearing
         }
 
     private:
