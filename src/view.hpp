@@ -15,6 +15,7 @@ class TetrisView {
             for (size_t i=0; i<grid.n_squares; i++){
                 if (grid.occupied.at(i)) ch = '=';
                 else if (active_piece.has_value() && active_piece->global_grid.occupied.at(i)) ch = '#';
+                // else if (active_piece.has_value() && active_piece->shadow_grid.occupied.at(i)) ch = '~';
                 else ch = '.';
 
                 grid_coods = grid.to_2D(i);
