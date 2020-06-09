@@ -1,5 +1,5 @@
-#include "utils/grid.hpp"
-#include "utils/tetris.hpp"
+#include "grid.hpp"
+#include "tetris.hpp"
 
 int main(){
     GridSize grid_size{10, 15};

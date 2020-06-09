@@ -5,7 +5,7 @@ Tetris for the terminal, implemented in C++
 # Setup
 This works for me:
 
-`clang++ -std=c++17 -lncurses -o tetris main.cpp`
+`clang++ -std=c++17 -lncurses -o tetris src/main.cpp`
 
 If you don't have `clang++`, you might have `g++`.
 
