@@ -9,14 +9,14 @@ struct ActivePiece {
           sediment_grid{sediment_grid},
           global_grid{sediment_grid.grid_size, std::vector<bool>(sediment_grid.n_squares, false)}
     {
-        x_loc = (global_grid.grid_size.x - shape.width) / 2;
+        shape_loc.x = (global_grid.grid_size.x - shape.width) / 2;
         update_global_grid();
     };
 
     void down() {
-        y_loc++;
+        shape_loc.y++;
         if(!update_global_grid()){
-            y_loc--;
+            shape_loc.y--;
             update_global_grid();
             landed = true;
         }
@@ -24,25 +24,25 @@ struct ActivePiece {
 
     void fall() {
         do {
-            y_loc++;
+            shape_loc.y++;
         } while (update_global_grid());
-        y_loc--;
+        shape_loc.y--;
         update_global_grid();
         landed = true;
     }
 
     void left() {
-        x_loc--;
+        shape_loc.x--;
         if(!update_global_grid()){
-            x_loc++;
+            shape_loc.x++;
             update_global_grid();
         }
     }
 
     void right() {
-        x_loc++;
+        shape_loc.x++;
         if(!update_global_grid()){
-            x_loc--;
+            shape_loc.x--;
             update_global_grid();
         }
     }
@@ -57,19 +57,17 @@ struct ActivePiece {
         // Update the global grid giving the current piece's occupancy.
         // bool return code denotes VALIDITY OF STATE.
         // Update does not complete if state is invalid.
-        int global_x, global_y, global_i;
+        int global_i;
         std::fill(global_grid.occupied.begin(), global_grid.occupied.end(), false);
+        GridCoord global_xy;
 
-        for(size_t local_i=0; local_i< shape.size; local_i++) {
-            if(shape.grid->occupied.at(local_i)) {
-                global_x = x_loc + (local_i % shape.width);
-                global_y = y_loc + (local_i / shape.width);
-                global_i = (global_y * sediment_grid.grid_size.x) + global_x;
-                if (global_i >= global_grid.n_squares) return false; // Fallen off bottom
-                else if (global_x < 0 || global_x >= global_grid.grid_size.x) return false ; // Off the sides
-                else if (sediment_grid.occupied.at(global_i)) return false; // Piece overlaps with sediment (previous pieces)
-                global_grid.occupied.at(global_i) = true;
-            }
+        for(auto&& local_i : shape.grid->true_indices()){
+            global_xy = shape.grid->to_2D(local_i) + shape_loc;
+            global_i = global_grid.to_1D(global_xy);
+            if (global_i >= global_grid.n_squares) return false; // Fallen off bottom
+            else if (global_xy.x < 0 || global_xy.x >= global_grid.grid_size.x) return false ; // Off the sides
+            else if (sediment_grid.occupied.at(global_i)) return false; // Piece overlaps with sediment (previous pieces)
+            global_grid.occupied.at(global_i) = true;
         }
         return true;
     }
@@ -77,8 +75,7 @@ struct ActivePiece {
     private:
         Shapes::Shape shape;
         const Grid& sediment_grid;
-        int x_loc{0};
-        int y_loc{0};
+        GridCoord shape_loc{0, 0};
 
     public:
         bool landed{false};
