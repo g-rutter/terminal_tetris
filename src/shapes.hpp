@@ -82,7 +82,7 @@ namespace Shapes {
     );
 
     const Shape I(
-        Shape::rotate90(Grid(GridSize(1, 4), {x, x, x, x}))
+        Grid(GridSize(1, 4), {x, x, x, x})
     );
 
     const std::vector all_shapes = {L, T, BackwardsL, Box, I};

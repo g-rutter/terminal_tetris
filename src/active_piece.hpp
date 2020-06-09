@@ -7,17 +7,18 @@ struct ActivePiece {
     ActivePiece(const Shapes::Shape shape, const Grid& sediment_grid)
         : shape{shape},
           sediment_grid{sediment_grid},
-          global_grid{sediment_grid.grid_size, std::vector<bool>(sediment_grid.n_squares, false)}
+          global_grid{sediment_grid.grid_size, std::vector<bool>(sediment_grid.n_squares, false)},
+          shadow_grid{sediment_grid.grid_size, std::vector<bool>(sediment_grid.n_squares, false)}
     {
         shape_loc.x = (global_grid.grid_size.x - shape.width) / 2;
-        update_global_grid();
+        update_grid();
     };
 
     void down() {
         shape_loc.y++;
-        if(!update_global_grid()){
+        if(!update_grid()){
             shape_loc.y--;
-            update_global_grid();
+            update_grid();
             landed = true;
         }
     }
@@ -25,35 +26,39 @@ struct ActivePiece {
     void fall() {
         do {
             shape_loc.y++;
-        } while (update_global_grid());
+        } while (update_grid());
         shape_loc.y--;
-        update_global_grid();
+        update_grid();
         landed = true;
     }
 
     void left() {
         shape_loc.x--;
-        if(!update_global_grid()){
+        if(!update_grid()){
             shape_loc.x++;
-            update_global_grid();
+            update_grid();
         }
     }
 
     void right() {
         shape_loc.x++;
-        if(!update_global_grid()){
+        if(!update_grid()){
             shape_loc.x--;
-            update_global_grid();
+            update_grid();
         }
     }
 
     void rotate() {
+        int recentre_amount = (shape.grid->grid_size.x - shape.grid->grid_size.y) / 2;
         do {
             shape.rotate();
-        } while (!update_global_grid());
+            shape_loc.x += recentre_amount;
+            shape_loc.y -= recentre_amount;
+            recentre_amount = -recentre_amount;
+        } while (!update_grid());
     }
 
-    bool update_global_grid() {
+    bool update_grid() {
         // Update the global grid giving the current piece's occupancy.
         // bool return code denotes VALIDITY OF STATE.
         // Update does not complete if state is invalid.
@@ -69,6 +74,7 @@ struct ActivePiece {
             else if (sediment_grid.occupied.at(global_i)) return false; // Piece overlaps with sediment (previous pieces)
             global_grid.occupied.at(global_i) = true;
         }
+
         return true;
     }
 
@@ -79,5 +85,5 @@ struct ActivePiece {
 
     public:
         bool landed{false};
-        Grid global_grid;
+        Grid global_grid, shadow_grid;
 };
