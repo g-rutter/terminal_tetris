@@ -91,7 +91,7 @@ struct Tetris {
                 score++;
             }
         }
-        if(score == 4) score = 8;
+        if(score == 4) score = 8; // Bonus for getting tetris
         return score;
     }
 
