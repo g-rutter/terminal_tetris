@@ -56,7 +56,7 @@ struct ActivePiece {
     bool update_global_grid() {
         // Update the global grid giving the current piece's occupancy.
         // bool return code denotes VALIDITY OF STATE.
-        // Update does not complete if state is found to be invalid.
+        // Update does not complete if state is invalid.
         int global_x, global_y, global_i;
         std::fill(global_grid.occupied.begin(), global_grid.occupied.end(), false);
 
@@ -74,10 +74,13 @@ struct ActivePiece {
         return true;
     }
 
-    Shapes::Shape shape;
-    const Grid& sediment_grid;
-    Grid global_grid;
-    int x_loc{0};
-    int y_loc{0};
-    bool landed{false};
+    private:
+        Shapes::Shape shape;
+        const Grid& sediment_grid;
+        int x_loc{0};
+        int y_loc{0};
+
+    public:
+        bool landed{false};
+        Grid global_grid;
 };
