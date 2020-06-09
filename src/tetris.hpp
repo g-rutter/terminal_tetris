@@ -57,7 +57,7 @@ struct Tetris {
                 tetrisview.update_score(score, cycle_time_ms);
                 tetrisview.update_next_shape(Shapes::all_shapes[next_shape]);
 
-                if(!active_piece->valid_state()) break; // New piece being immediately invalid marks end of game.
+                if(!active_piece->update_global_grid()) break; // New piece being immediately invalid marks end of game.
             }
             active_piece->down();
 
@@ -91,6 +91,7 @@ struct Tetris {
                 score++;
             }
         }
+        if(score == 4) score = 8;
         return score;
     }
 
