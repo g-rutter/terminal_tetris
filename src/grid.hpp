@@ -3,29 +3,29 @@
 #include <math.h>
 
 struct GridSize{
-    explicit GridSize(int square_width) : x{square_width}, y{square_width} {}
-    GridSize(int x, int y) : x{x}, y{y} {}
-    int x;
-    int y;
+    explicit GridSize(const int square_width) : x{square_width}, y{square_width} {}
+    GridSize(const int x, const int y) : x{x}, y{y} {}
+    const int x;
+    const int y;
 };
 
 struct GridCoord{
-    GridCoord operator+(GridCoord other) const {
+    GridCoord operator+(const GridCoord other) const {
         return GridCoord{this->x + other.x, this->y + other.y};
     }
-    GridCoord operator+(int value) const {
+    GridCoord operator+(const int value) const {
         return GridCoord{this->x + value, this->y + value};
     }
-    GridCoord operator-(GridCoord other) const {
+    GridCoord operator-(const GridCoord other) const {
         return GridCoord{this->x - other.x, this->y - other.y};
     }
-    GridCoord operator-(int value) const {
+    GridCoord operator-(const int value) const {
         return GridCoord{this->x - value, this->y - value};
     }
-    GridCoord operator/(int factor) const {
+    GridCoord operator/(const int factor) const {
         return GridCoord{this->x / factor, this->y / factor};
     }
-    GridCoord operator*(int factor) const {
+    GridCoord operator*(const int factor) const {
         return GridCoord{factor * this->x, factor * this->y};
     }
 

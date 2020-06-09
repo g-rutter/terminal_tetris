@@ -134,7 +134,7 @@ struct Tetris {
 
     private:
         Grid& grid;
-        TetrisView tetrisview;        
-        int start_cycle_time_ms{500};
+        const TetrisView tetrisview;        
+        const int start_cycle_time_ms{500};
         std::optional<ActivePiece> active_piece{};
 };
