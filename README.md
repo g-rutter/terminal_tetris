@@ -2,6 +2,11 @@ Tetris for the terminal, implemented in C++
 
 ![alt text](screenshot.png)
 
+# Preview
+Try the preview [here](http://terminaltetris.grutter.repl.run/)
+
+(Sorry, it's not a web app, there will be input lag)
+
 # Setup
 This works for me:
 
