@@ -3,8 +3,8 @@
 #include <math.h>
 
 struct GridSize{
-    explicit GridSize(const int square_width) : x{square_width}, y{square_width} {}
-    GridSize(const int x, const int y) : x{x}, y{y} {}
+    explicit constexpr GridSize(const int square_width) : x{square_width}, y{square_width} {}
+    constexpr GridSize(const int x, const int y) : x{x}, y{y} {}
     const int x;
     const int y;
 };
@@ -37,7 +37,7 @@ struct Grid{
     Grid(const GridSize grid_size) : grid_size{grid_size},
                                      n_squares{grid_size.y * grid_size.x} {};
 
-    Grid(const GridSize grid_size, std::vector<bool> overwrite_occupied) : Grid(grid_size) {
+    Grid(const GridSize grid_size, const std::vector<bool> overwrite_occupied) : Grid(grid_size) {
         occupied = overwrite_occupied;
     }
 
