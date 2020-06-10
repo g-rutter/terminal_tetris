@@ -34,38 +34,38 @@ struct GridCoord{
 };
 
 struct Grid{
-    Grid(const GridSize grid_size) : grid_size{grid_size},
-                                     n_squares{grid_size.y * grid_size.x} {};
+    Grid(const GridSize grid_size) : m_grid_size{grid_size},
+                                     m_n_squares{grid_size.y * grid_size.x} {};
 
-    Grid(const GridSize grid_size, const std::vector<bool> overwrite_occupied) : Grid(grid_size) {
-        occupied = overwrite_occupied;
+    Grid(const GridSize grid_size, const std::vector<bool> occupied) : Grid(grid_size) {
+        m_occupied = occupied;
     }
 
     GridCoord to_2D(const int i) const {
-        return GridCoord{i % grid_size.x, i / grid_size.x};
+        return GridCoord{i % m_grid_size.x, i / m_grid_size.x};
     }
 
     size_t to_1D(const GridCoord coords) const {
-        return (coords.y * grid_size.x) + coords.x;
+        return (coords.y * m_grid_size.x) + coords.x;
     }
 
     std::vector<size_t> true_indices() const {
         std::vector<size_t> indices;
-        for (size_t i=0; i < n_squares; i++){
-            if (occupied.at(i)) indices.push_back(i);
+        for (size_t i=0; i < m_n_squares; i++){
+            if (m_occupied.at(i)) indices.push_back(i);
         }
         return indices;
     }
 
     void absorb(Grid piece_grid) {
-        for (auto &&i : piece_grid.true_indices()) occupied[i] = true;
+        for (auto &&i : piece_grid.true_indices()) m_occupied[i] = true;
     }
 
     void zero() {
-        occupied = std::vector<bool>(n_squares, false);
+        m_occupied = std::vector<bool>(m_n_squares, false);
     }
 
-    const GridSize grid_size;
-    const int n_squares;
-    std::vector<bool> occupied = std::vector<bool>(n_squares, false);
+    const GridSize m_grid_size;
+    const int m_n_squares;
+    std::vector<bool> m_occupied = std::vector<bool>(m_n_squares, false);
 };

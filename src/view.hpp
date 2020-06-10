@@ -4,7 +4,7 @@
 
 class TetrisView {
     public:
-        TetrisView(const Grid& grid) : grid{grid}
+        TetrisView(const Grid& grid) : m_grid{grid}
         {
             initscr();
             curs_set(0); // hide cursor
@@ -13,7 +13,7 @@ class TetrisView {
         };
 
         void splash_screen() const {
-            const GridCoord text_loc{grid.grid_size.x + 1, 2};
+            const GridCoord text_loc{m_grid.m_grid_size.x + 1, 2};
             write_line("Controls", text_loc.x, text_loc.y, A_NORMAL);
             write_line("wasd/arrows - move", text_loc.x, text_loc.y + 2, A_NORMAL);
             write_line("w/up - rotate", text_loc.x, text_loc.y + 3, A_NORMAL);
@@ -28,19 +28,19 @@ class TetrisView {
             char ch;
             size_t effect;
             bool is_border;
-            for (size_t i=0; i<grid.n_squares; i++){
+            for (size_t i=0; i<m_grid.m_n_squares; i++){
                 effect = A_NORMAL;
-                grid_coords = grid.to_2D(i);
-                if (grid.occupied.at(i)) {
+                grid_coords = m_grid.to_2D(i);
+                if (m_grid.m_occupied.at(i)) {
                     effect = A_REVERSE;
                     ch = ' ';
                 }
-                else if (active_piece.has_value() && active_piece->global_grid.occupied.at(i)) ch = '#';
-                else if (active_piece.has_value() && active_piece->shadow_grid.occupied.at(i)) ch = 'x';
+                else if (active_piece.has_value() && active_piece->m_global_grid.m_occupied.at(i)) ch = '#';
+                else if (active_piece.has_value() && active_piece->m_shadow_grid.m_occupied.at(i)) ch = 'x';
                 else {
                     is_border = (grid_coords.x == 0
-                                 || grid_coords.x + 1 == grid.grid_size.x
-                                 || grid_coords.y + 1 == grid.grid_size.y);
+                                 || grid_coords.x + 1 == m_grid.m_grid_size.x
+                                 || grid_coords.y + 1 == m_grid.m_grid_size.y);
                     effect = is_border ? A_NORMAL : A_INVIS;
                     ch = '.';
                 }
@@ -50,41 +50,41 @@ class TetrisView {
         }
 
         void update_score(const int score, const int cycle_time_ms) const {
-            clear_line(0, grid.grid_size.y + 1);
-            clear_line(0, grid.grid_size.y + 2);
+            clear_line(0, m_grid.m_grid_size.y + 1);
+            clear_line(0, m_grid.m_grid_size.y + 2);
             char score_str[100];
             sprintf(score_str, "Score: %d\nDrop every: %d ms", score, cycle_time_ms);
-            write_line(score_str, 0, grid.grid_size.y + 1, A_NORMAL);
+            write_line(score_str, 0, m_grid.m_grid_size.y + 1, A_NORMAL);
         }
 
         void update_highscore(const int score) const {
             char highscore_str[100];
             sprintf(highscore_str, "Highscore: %d", score);
-            write_line(highscore_str, 0, grid.grid_size.y + 3, A_NORMAL);
+            write_line(highscore_str, 0, m_grid.m_grid_size.y + 3, A_NORMAL);
         }
 
         void update_next_shape(const shapes::Shape& shape) const {
-            const GridCoord text_loc{grid.grid_size.x + 1, 2};
-            const GridCoord shape_loc{text_loc.x + 2, text_loc.y + 2};
+            const GridCoord text_loc{m_grid.m_grid_size.x + 1, 2};
+            const GridCoord m_shape_loc{text_loc.x + 2, text_loc.y + 2};
 
             write_line("Next up:", text_loc.x, text_loc.y, A_NORMAL);
-            for(size_t i=0; i<5; i++) clear_line(grid.grid_size.x + 1, shape_loc.y + i);
+            for(size_t i=0; i<5; i++) clear_line(m_grid.m_grid_size.x + 1, m_shape_loc.y + i);
 
             GridCoord global_coords;
-            const auto& shape_grid = *shape.grid;
+            const auto& shape_grid = *shape.m_grid;
             for (auto &&i : shape_grid.true_indices()){
-                global_coords = shape_grid.to_2D(i) + shape_loc;
+                global_coords = shape_grid.to_2D(i) + m_shape_loc;
                 write_char('#', global_coords.x, global_coords.y, A_NORMAL);
             }
         }
 
         void show_game_over() const {
-            write_line("Game over: (r)estart or (q)uit", 0, grid.grid_size.y, A_BOLD);
+            write_line("Game over: (r)estart or (q)uit", 0, m_grid.m_grid_size.y, A_BOLD);
         }
 
         void hide_game_over() const {
-            clear_line(0, grid.grid_size.y);
-            write_line("", 0, grid.grid_size.y, A_NORMAL);
+            clear_line(0, m_grid.m_grid_size.y);
+            write_line("", 0, m_grid.m_grid_size.y, A_NORMAL);
         }
 
         void write_char(const char ch, const int x, const int y, const size_t effect) const {
@@ -109,5 +109,5 @@ class TetrisView {
         }
 
     private:
-        const Grid& grid;
+        const Grid& m_grid;
 };

@@ -15,42 +15,44 @@ namespace shapes {
         }
 
         Shape(const Grid form)
-            : grids{get_rotations(form)},
-              grid{&grids[0]},
-              size{form.n_squares},
-              width{grid->grid_size.x}
+            : m_grids{get_rotations(form)},
+              m_grid{&m_grids[0]},
+              m_size{form.m_n_squares},
+              m_width{m_grid->m_grid_size.x}
               {}
 
         void rotate() {
-            current_rotation ++;
-            current_rotation %= 4;
-            grid = &grids[current_rotation];
-            width = grid->grid_size.x;
+            m_current_rotation ++;
+            m_current_rotation %= 4;
+            m_grid = &m_grids[m_current_rotation];
+            m_width = m_grid->m_grid_size.x;
         }
 
         static const Grid get_rotation(const Grid current){
-            const GridCoord centre{current.grid_size.x, current.grid_size.y};
-            const GridCoord inverted_centre{current.grid_size.y, current.grid_size.x};
-            Grid rotated{{current.grid_size.y, current.grid_size.x}, current.occupied};
+            const GridCoord centre{current.m_grid_size.x, current.m_grid_size.y};
+            const GridCoord inverted_centre{current.m_grid_size.y, current.m_grid_size.x};
+            Grid rotated{{current.m_grid_size.y, current.m_grid_size.x}, current.m_occupied};
             GridCoord start_coord, end_coord, transformed;
             int end_i;
 
-            for (size_t start_i=0; start_i < current.n_squares; start_i++){
+            for (size_t start_i=0; start_i < current.m_n_squares; start_i++){
                 start_coord = current.to_2D(start_i);
                 transformed = (start_coord * 2) - centre + 1;
                 end_coord = (GridCoord{-transformed.y, transformed.x} + inverted_centre - 1) / 2;
 
                 end_i = rotated.to_1D(end_coord);
-                rotated.occupied.at(end_i) = current.occupied.at(start_i);
+                rotated.m_occupied.at(end_i) = current.m_occupied.at(start_i);
             }
             return rotated;
         }
         
-        const std::array<const Grid, 4> grids;
-        const Grid* grid; // TODO Raw pointer!
-        const int size;
-        int width;
-        int current_rotation = 0;
+        private:
+            const std::array<const Grid, 4> m_grids;
+            int m_current_rotation = 0;
+        public:
+            const Grid* m_grid;
+            const int m_size;
+            int m_width;
     };
 
     const Shape L(

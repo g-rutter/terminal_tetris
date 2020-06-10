@@ -16,21 +16,21 @@
 using namespace std;
 
 struct Tetris {
-    Tetris(Grid& grid) : grid{grid}, tetrisview{grid} {};
+    Tetris(Grid& grid) : m_grid{grid}, m_tetrisview{grid} {};
 
     void start() {
-        tetrisview.splash_screen();
+        m_tetrisview.splash_screen();
         size_t i_shape = 0;
         while(getch() != ' ') {
-            if(!active_piece) {
-                active_piece.emplace(shapes::all_shapes[i_shape++], grid);
+            if(!m_active_piece) {
+                m_active_piece.emplace(shapes::all_shapes[i_shape++], m_grid);
                 i_shape %= shapes::all_shapes.size();
             }
-            active_piece->down();
-            active_piece->rotate();
-            if (active_piece->landed) active_piece.reset();
-            tetrisview.update_grid(active_piece);
-            std::this_thread::sleep_for(std::chrono::milliseconds(demo_cycle_time_ms));
+            m_active_piece->down();
+            m_active_piece->rotate();
+            if (m_active_piece->m_landed) m_active_piece.reset();
+            m_tetrisview.update_grid(m_active_piece);
+            std::this_thread::sleep_for(std::chrono::milliseconds(m_demo_cycle_time_ms));
         }
 
         int highscore = 0;
@@ -38,7 +38,7 @@ struct Tetris {
         do {
             score = run();
             highscore = score > highscore? score : highscore;
-            tetrisview.update_highscore(highscore);
+            m_tetrisview.update_highscore(highscore);
         } while(restart_input());
     }
 
@@ -56,36 +56,36 @@ struct Tetris {
 
     int run() {
         int score = 0;
-        grid.zero();
-        int cycle_time_ms = start_cycle_time_ms;
-        active_piece.reset();
-        tetrisview.hide_game_over();
+        m_grid.zero();
+        int cycle_time_ms = m_start_cycle_time_ms;
+        m_active_piece.reset();
+        m_tetrisview.hide_game_over();
 
         int next_shape = shapes::random_shape();
 
         while(true) {
-            if(!active_piece) {
-                active_piece.emplace(shapes::all_shapes[next_shape], grid);
+            if(!m_active_piece) {
+                m_active_piece.emplace(shapes::all_shapes[next_shape], m_grid);
                 next_shape = shapes::random_shape();
 
-                tetrisview.update_score(score, cycle_time_ms);
-                tetrisview.update_next_shape(shapes::all_shapes[next_shape]);
+                m_tetrisview.update_score(score, cycle_time_ms);
+                m_tetrisview.update_next_shape(shapes::all_shapes[next_shape]);
 
-                if(!active_piece->update_grids()) break; // New piece being immediately invalid marks end of game.
+                if(!m_active_piece->update_grids()) break; // New piece being immediately invalid marks end of game.
             }
-            active_piece->down();
+            m_active_piece->down();
 
-            if (active_piece->landed){
-                grid.absorb(active_piece->global_grid);
-                active_piece.reset();
+            if (m_active_piece->m_landed){
+                m_grid.absorb(m_active_piece->m_global_grid);
+                m_active_piece.reset();
                 score += remove_rows();
                 cycle_time_ms *= 0.99;
             }
 
-            tetrisview.update_grid(active_piece);
-            if (active_piece.has_value()) input_loop(cycle_time_ms);
+            m_tetrisview.update_grid(m_active_piece);
+            if (m_active_piece.has_value()) input_loop(cycle_time_ms);
         }
-        tetrisview.show_game_over();
+        m_tetrisview.show_game_over();
         return score;
     }
 
@@ -93,15 +93,15 @@ struct Tetris {
         size_t i_low, i_high;
         int score{0};
         bool all;
-        for(size_t row=0; row < grid.grid_size.y; row++) {
-            i_low = row * grid.grid_size.x;
-            i_high = i_low + grid.grid_size.x;
-            all = std::all_of(grid.occupied.begin() + i_low, grid.occupied.begin() + i_high,
+        for(size_t row=0; row < m_grid.m_grid_size.y; row++) {
+            i_low = row * m_grid.m_grid_size.x;
+            i_high = i_low + m_grid.m_grid_size.x;
+            all = std::all_of(m_grid.m_occupied.begin() + i_low, m_grid.m_occupied.begin() + i_high,
                               [](const bool v){ return v; } );
             if (all) {
-                std::copy_backward(grid.occupied.begin(), grid.occupied.begin() + i_low,
-                                   grid.occupied.begin() + i_high);
-                std::fill(grid.occupied.begin(), grid.occupied.begin() + grid.grid_size.x, false);
+                std::copy_backward(m_grid.m_occupied.begin(), m_grid.m_occupied.begin() + i_low,
+                                   m_grid.m_occupied.begin() + i_high);
+                std::fill(m_grid.m_occupied.begin(), m_grid.m_occupied.begin() + m_grid.m_grid_size.x, false);
                 score++;
             }
         }
@@ -118,36 +118,36 @@ struct Tetris {
             switch (ch) {
                 case 'a':
                 case KEY_LEFT:
-                    active_piece->left();
+                    m_active_piece->left();
                     break;
                 case 'd':
                 case KEY_RIGHT:
-                    active_piece->right();
+                    m_active_piece->right();
                     break;
                 case 'w':
                 case KEY_UP:
-                    active_piece->rotate();
+                    m_active_piece->rotate();
                     break;
                 case 's':
                 case KEY_DOWN:
-                    active_piece->down();
-                    take_input = !active_piece->landed;
+                    m_active_piece->down();
+                    take_input = !m_active_piece->m_landed;
                     break;
                 case ' ':
-                    active_piece->fall();
+                    m_active_piece->fall();
                     take_input = false;
                     break;
             }
-            if(ch != ERR) tetrisview.update_grid(active_piece);
+            if(ch != ERR) m_tetrisview.update_grid(m_active_piece);
             chrono::time_point end = chrono::steady_clock::now();
             elapsed = chrono::duration_cast<chrono::milliseconds>(end - start).count();
         } while (take_input && elapsed < cycle_time_ms);
     }
 
     private:
-        Grid& grid;
-        const TetrisView tetrisview;        
-        const int start_cycle_time_ms{500};
-        const int demo_cycle_time_ms{500};
-        std::optional<ActivePiece> active_piece{};
+        Grid& m_grid;
+        const TetrisView m_tetrisview;        
+        const int m_start_cycle_time_ms{500};
+        const int m_demo_cycle_time_ms{500};
+        std::optional<ActivePiece> m_active_piece{};
 };
