@@ -11,22 +11,22 @@ struct GridSize{
 
 struct GridCoord{
     GridCoord operator+(const GridCoord other) const {
-        return GridCoord{this->x + other.x, this->y + other.y};
+        return GridCoord{x + other.x, y + other.y};
     }
     GridCoord operator+(const int value) const {
-        return GridCoord{this->x + value, this->y + value};
+        return GridCoord{x + value, y + value};
     }
     GridCoord operator-(const GridCoord other) const {
-        return GridCoord{this->x - other.x, this->y - other.y};
+        return GridCoord{x - other.x, y - other.y};
     }
     GridCoord operator-(const int value) const {
-        return GridCoord{this->x - value, this->y - value};
+        return GridCoord{x - value, y - value};
     }
     GridCoord operator/(const int factor) const {
-        return GridCoord{this->x / factor, this->y / factor};
+        return GridCoord{x / factor, y / factor};
     }
     GridCoord operator*(const int factor) const {
-        return GridCoord{factor * this->x, factor * this->y};
+        return GridCoord{factor * x, factor * y};
     }
 
     int x;
