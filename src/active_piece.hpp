@@ -4,7 +4,7 @@
 #include "shapes.hpp"
 
 struct ActivePiece {
-    ActivePiece(const Shapes::Shape shape, const Grid& sediment_grid)
+    ActivePiece(const shapes::Shape shape, const Grid& sediment_grid)
         : shape{shape},
           sediment_grid{sediment_grid},
           global_grid{sediment_grid.grid_size, std::vector<bool>(sediment_grid.n_squares, false)},
@@ -80,7 +80,7 @@ struct ActivePiece {
         return valid;
     }
     
-    bool update_grid(const Grid& sediment_grid, Grid& update_grid, const Shapes::Shape& shape, const GridCoord& shape_loc){
+    bool update_grid(const Grid& sediment_grid, Grid& update_grid, const shapes::Shape& shape, const GridCoord& shape_loc){
         GridCoord global_xy;
         int global_i;
 
@@ -96,7 +96,7 @@ struct ActivePiece {
     }
 
     private:
-        Shapes::Shape shape;
+        shapes::Shape shape;
         const Grid& sediment_grid;
         GridCoord shape_loc{0, 0};
 

@@ -3,7 +3,7 @@
 #include <math.h>
 #include "grid.hpp"
 
-namespace Shapes {
+namespace shapes {
     static const bool x = true;
     static const bool o = false;
 

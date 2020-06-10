@@ -63,7 +63,7 @@ class TetrisView {
             write_line(highscore_str, 0, grid.grid_size.y + 3, A_NORMAL);
         }
 
-        void update_next_shape(const Shapes::Shape& shape) const {
+        void update_next_shape(const shapes::Shape& shape) const {
             const GridCoord text_loc{grid.grid_size.x + 1, 2};
             const GridCoord shape_loc{text_loc.x + 2, text_loc.y + 2};
 

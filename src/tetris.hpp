@@ -23,8 +23,8 @@ struct Tetris {
         size_t i_shape = 0;
         while(getch() != ' ') {
             if(!active_piece) {
-                active_piece.emplace(Shapes::all_shapes[i_shape++], grid);
-                i_shape %= Shapes::all_shapes.size();
+                active_piece.emplace(shapes::all_shapes[i_shape++], grid);
+                i_shape %= shapes::all_shapes.size();
             }
             active_piece->down();
             active_piece->rotate();
@@ -61,15 +61,15 @@ struct Tetris {
         active_piece.reset();
         tetrisview.hide_game_over();
 
-        int next_shape = Shapes::random_shape();
+        int next_shape = shapes::random_shape();
 
         while(true) {
             if(!active_piece) {
-                active_piece.emplace(Shapes::all_shapes[next_shape], grid);
-                next_shape = Shapes::random_shape();
+                active_piece.emplace(shapes::all_shapes[next_shape], grid);
+                next_shape = shapes::random_shape();
 
                 tetrisview.update_score(score, cycle_time_ms);
-                tetrisview.update_next_shape(Shapes::all_shapes[next_shape]);
+                tetrisview.update_next_shape(shapes::all_shapes[next_shape]);
 
                 if(!active_piece->update_grids()) break; // New piece being immediately invalid marks end of game.
             }
