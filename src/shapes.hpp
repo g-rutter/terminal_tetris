@@ -84,7 +84,7 @@ namespace Shapes {
         Grid(GridSize(1, 4), {x, x, x, x})
     );
 
-    const std::vector all_shapes = {L, T, BackwardsL, Box, I};
+    const std::array all_shapes = {L, T, BackwardsL, Box, I};
     
     int random_shape() {
         return rand() % all_shapes.size();
