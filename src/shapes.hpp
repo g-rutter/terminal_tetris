@@ -8,10 +8,10 @@ namespace Shapes {
     static const bool o = false;
 
     struct Shape {
-        static std::array<Grid, 4> get_rotations(Grid form) {
-            Grid form90 = rotate90(form);
-            Grid form180 = rotate90(form90);
-            return std::array<Grid, 4>{ form, form90, form180, rotate90(form180) };
+        static std::array<const Grid, 4> get_rotations(const Grid form) {
+            Grid form90 = get_rotation(form);
+            Grid form180 = get_rotation(form90);
+            return std::array<const Grid, 4>{ form, form90, form180, get_rotation(form180) };
         }
 
         Shape(const Grid form)
@@ -28,7 +28,7 @@ namespace Shapes {
             width = grid->grid_size.x;
         }
 
-        static Grid rotate90(Grid current){
+        static const Grid get_rotation(const Grid current){
             const GridCoord centre{current.grid_size.x, current.grid_size.y};
             const GridCoord inverted_centre{current.grid_size.y, current.grid_size.x};
             Grid rotated{{current.grid_size.y, current.grid_size.x}, current.occupied};
@@ -46,7 +46,7 @@ namespace Shapes {
             return rotated;
         }
         
-        const std::array<Grid, 4> grids;
+        const std::array<const Grid, 4> grids;
         const Grid* grid; // TODO Raw pointer!
         const int size;
         int width;

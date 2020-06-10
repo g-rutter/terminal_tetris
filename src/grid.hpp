@@ -33,7 +33,7 @@ struct GridCoord{
     int y;
 };
 
-struct Grid{ // This class is sometimes 100% const (for shapes) and sometimes not - what to do?
+struct Grid{
     Grid(const GridSize grid_size) : grid_size{grid_size},
                                      n_squares{grid_size.y * grid_size.x} {};
 
