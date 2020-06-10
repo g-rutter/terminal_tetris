@@ -16,9 +16,9 @@ class TetrisView {
             const GridCoord text_loc{grid.grid_size.x + 1, 2};
             write_line("Controls", text_loc.x, text_loc.y, A_NORMAL);
             write_line("wasd/arrows - move", text_loc.x, text_loc.y + 2, A_NORMAL);
-            write_line("(w/up - rotate)", text_loc.x, text_loc.y + 3, A_NORMAL);
+            write_line("w/up - rotate", text_loc.x, text_loc.y + 3, A_NORMAL);
             write_line("space - drop piece", text_loc.x, text_loc.y + 4, A_NORMAL);
-            write_line("PRESS SPACE TO START", text_loc.x, text_loc.y + 6, A_NORMAL);
+            write_line("PRESS SPACE TO START", text_loc.x, text_loc.y + 6, A_UNDERLINE);
             update_grid(std::nullopt);
             wrefresh(stdscr);
         }

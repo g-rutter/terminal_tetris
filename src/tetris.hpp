@@ -20,11 +20,14 @@ struct Tetris {
 
     void start() {
         tetrisview.splash_screen();
+        size_t i_shape = 0;
         while(getch() != ' ') {
             if(!active_piece) {
-                active_piece.emplace(Shapes::all_shapes[Shapes::random_shape()], grid);
+                active_piece.emplace(Shapes::all_shapes[i_shape++], grid);
+                i_shape %= Shapes::all_shapes.size();
             }
             active_piece->down();
+            active_piece->rotate();
             if (active_piece->landed) active_piece.reset();
             tetrisview.update_grid(active_piece);
             std::this_thread::sleep_for(std::chrono::milliseconds(demo_cycle_time_ms));
@@ -145,6 +148,6 @@ struct Tetris {
         Grid& grid;
         const TetrisView tetrisview;        
         const int start_cycle_time_ms{500};
-        const int demo_cycle_time_ms{100};
+        const int demo_cycle_time_ms{500};
         std::optional<ActivePiece> active_piece{};
 };
