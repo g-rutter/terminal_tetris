@@ -19,6 +19,17 @@ struct Tetris {
     Tetris(Grid& grid) : grid{grid}, tetrisview{grid} {};
 
     void start() {
+        tetrisview.splash_screen();
+        while(getch() != ' ') {
+            if(!active_piece) {
+                active_piece.emplace(Shapes::all_shapes[Shapes::random_shape()], grid);
+            }
+            active_piece->down();
+            if (active_piece->landed) active_piece.reset();
+            tetrisview.update_grid(active_piece);
+            std::this_thread::sleep_for(std::chrono::milliseconds(demo_cycle_time_ms));
+        }
+
         int highscore = 0;
         int score;
         do {
@@ -99,8 +110,6 @@ struct Tetris {
         const chrono::time_point start = chrono::steady_clock::now();
         int elapsed;
         bool take_input = true;
-        nodelay(stdscr, TRUE);
-        keypad(stdscr, TRUE);
         do {
             int ch = getch();
             switch (ch) {
@@ -136,5 +145,6 @@ struct Tetris {
         Grid& grid;
         const TetrisView tetrisview;        
         const int start_cycle_time_ms{500};
+        const int demo_cycle_time_ms{100};
         std::optional<ActivePiece> active_piece{};
 };

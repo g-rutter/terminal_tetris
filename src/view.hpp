@@ -7,8 +7,21 @@ class TetrisView {
         TetrisView(const Grid& grid) : grid{grid}
         {
             initscr();
-            curs_set(0);
+            curs_set(0); // hide cursor
+            nodelay(stdscr, TRUE);
+            keypad(stdscr, TRUE);
         };
+
+        void splash_screen() const {
+            const GridCoord text_loc{grid.grid_size.x + 1, 2};
+            write_line("Controls", text_loc.x, text_loc.y, A_NORMAL);
+            write_line("wasd/arrows - move", text_loc.x, text_loc.y + 2, A_NORMAL);
+            write_line("(w/up - rotate)", text_loc.x, text_loc.y + 3, A_NORMAL);
+            write_line("space - drop piece)", text_loc.x, text_loc.y + 4, A_NORMAL);
+            write_line("PRESS SPACE TO START", text_loc.x, text_loc.y + 6, A_NORMAL);
+            update_grid(std::nullopt);
+            wrefresh(stdscr);
+        }
 
         void update_grid(const std::optional<ActivePiece>& active_piece) const {
             GridCoord grid_coords;
