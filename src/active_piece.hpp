@@ -10,7 +10,7 @@ struct ActivePiece {
           m_global_grid{sediment_grid.m_grid_size, std::vector<bool>(sediment_grid.m_n_squares, false)},
           m_shadow_grid{sediment_grid.m_grid_size, std::vector<bool>(sediment_grid.m_n_squares, false)}
     {
-        m_shape_loc.x = (m_global_grid.m_grid_size.x - shape.m_width) / 2;
+        m_shape_loc.x = (m_global_grid.m_grid_size.x - shape.m_grid->m_grid_size.x) / 2;
         update_grids();
     };
 
@@ -82,7 +82,7 @@ struct ActivePiece {
     
     bool update_grid(const Grid& m_sediment_grid, Grid& update_grid, const shapes::Shape& shape, const GridCoord& shape_loc){
         GridCoord global_xy;
-        int global_i;
+        size_t global_i;
 
         for(size_t& local_i : shape.m_grid->true_indices()){
             global_xy = shape.m_grid->to_2D(local_i) + shape_loc;

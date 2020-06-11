@@ -17,15 +17,13 @@ namespace shapes {
         Shape(const Grid form)
             : m_grids{get_rotations(form)},
               m_grid{&m_grids[0]},
-              m_size{form.m_n_squares},
-              m_width{m_grid->m_grid_size.x}
+              m_size{form.m_n_squares}
               {}
 
         void rotate() {
             m_current_rotation ++;
             m_current_rotation %= 4;
             m_grid = &m_grids[m_current_rotation];
-            m_width = m_grid->m_grid_size.x;
         }
 
         static const Grid get_rotation(const Grid current){
@@ -51,8 +49,7 @@ namespace shapes {
             int m_current_rotation = 0;
         public:
             const Grid* m_grid;
-            const int m_size;
-            int m_width;
+            const size_t m_size;
     };
 
     const Shape L(

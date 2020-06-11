@@ -3,34 +3,34 @@
 #include <math.h>
 
 struct GridSize{
-    explicit constexpr GridSize(const int square_width) : x{square_width}, y{square_width} {}
-    constexpr GridSize(const int x, const int y) : x{x}, y{y} {}
-    const int x;
-    const int y;
+    explicit constexpr GridSize(const size_t square_width) : x{square_width}, y{square_width} {}
+    constexpr GridSize(const size_t x, const size_t y) : x{x}, y{y} {}
+    const size_t x;
+    const size_t y;
 };
 
 struct GridCoord{
     GridCoord operator+(const GridCoord other) const {
         return GridCoord{x + other.x, y + other.y};
     }
-    GridCoord operator+(const int value) const {
+    GridCoord operator+(const size_t value) const {
         return GridCoord{x + value, y + value};
     }
     GridCoord operator-(const GridCoord other) const {
         return GridCoord{x - other.x, y - other.y};
     }
-    GridCoord operator-(const int value) const {
+    GridCoord operator-(const size_t value) const {
         return GridCoord{x - value, y - value};
     }
-    GridCoord operator/(const int factor) const {
+    GridCoord operator/(const size_t factor) const {
         return GridCoord{x / factor, y / factor};
     }
-    GridCoord operator*(const int factor) const {
+    GridCoord operator*(const size_t factor) const {
         return GridCoord{factor * x, factor * y};
     }
 
-    int x;
-    int y;
+    size_t x;
+    size_t y;
 };
 
 struct Grid{
@@ -57,15 +57,15 @@ struct Grid{
         return indices;
     }
 
-    void absorb(Grid piece_grid) {
+    void absorb(Grid& piece_grid) {
         for (auto &&i : piece_grid.true_indices()) m_occupied[i] = true;
     }
 
     void zero() {
-        m_occupied = std::vector<bool>(m_n_squares, false);
+        std::fill(m_occupied.begin(), m_occupied.end(), false);
     }
 
     const GridSize m_grid_size;
-    const int m_n_squares;
+    const size_t m_n_squares;
     std::vector<bool> m_occupied = std::vector<bool>(m_n_squares, false);
 };
