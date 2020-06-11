@@ -19,11 +19,11 @@ class TetrisView {
             write_line("w/up - rotate", text_loc.x, text_loc.y + 3, A_NORMAL);
             write_line("space - drop piece", text_loc.x, text_loc.y + 4, A_NORMAL);
             write_line("PRESS SPACE TO START", text_loc.x, text_loc.y + 6, A_UNDERLINE);
-            update_grid(std::nullopt);
+            update_gridview(std::nullopt);
             wrefresh(stdscr);
         }
 
-        void update_grid(const std::optional<ActivePiece>& active_piece) const {
+        void update_gridview(const std::optional<ActivePiece>& active_piece) const {
             GridCoord grid_coords;
             char ch;
             size_t effect;

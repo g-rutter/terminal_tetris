@@ -58,7 +58,8 @@ struct Grid{
     }
 
     void absorb(Grid& piece_grid) {
-        for (auto &&i : piece_grid.true_indices()) m_occupied[i] = true;
+        std::transform(piece_grid.m_occupied.begin(), piece_grid.m_occupied.end(),
+                       m_occupied.begin(), m_occupied.begin(), std::logical_or<bool>());
     }
 
     void zero() {

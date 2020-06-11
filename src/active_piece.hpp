@@ -66,7 +66,6 @@ struct ActivePiece {
         bool valid = update_grid(m_sediment_grid, m_global_grid, m_shape, m_shape_loc);
 
         if (valid) {
-            // shadow grid
             GridCoord shadow_loc = {m_shape_loc.x, m_shape_loc.y + 1};
             while(update_grid(m_sediment_grid, m_shadow_grid, m_shape, shadow_loc)) {
                 shadow_loc.y++;
@@ -79,23 +78,23 @@ struct ActivePiece {
         } 
         return valid;
     }
-    
-    bool update_grid(const Grid& m_sediment_grid, Grid& update_grid, const shapes::Shape& shape, const GridCoord& shape_loc){
-        GridCoord global_xy;
-        size_t global_i;
-
-        for(size_t& local_i : shape.m_grid->true_indices()){
-            global_xy = shape.m_grid->to_2D(local_i) + shape_loc;
-            global_i = update_grid.to_1D(global_xy);
-            if (global_i >= update_grid.m_n_squares) return false; // Fallen off bottom
-            else if (global_xy.x < 0 || global_xy.x >= update_grid.m_grid_size.x) return false ; // Off the sides
-            else if (m_sediment_grid.m_occupied.at(global_i)) return false; // Piece overlaps with sediment (previous pieces)
-            update_grid.m_occupied.at(global_i) = true;
-        }
-        return true;
-    }
 
     private:
+        
+        bool update_grid(const Grid& m_sediment_grid, Grid& update_grid, const shapes::Shape& shape, const GridCoord& shape_loc){
+            GridCoord global_xy;
+            size_t global_i;
+
+            for(size_t& local_i : shape.m_grid->true_indices()){
+                global_xy = shape.m_grid->to_2D(local_i) + shape_loc;
+                global_i = update_grid.to_1D(global_xy);
+                if (global_i >= update_grid.m_n_squares) return false; // Fallen off bottom
+                else if (global_xy.x < 0 || global_xy.x >= update_grid.m_grid_size.x) return false ; // Off the sides
+                else if (m_sediment_grid.m_occupied.at(global_i)) return false; // Piece overlaps with sediment (previous pieces)
+                update_grid.m_occupied.at(global_i) = true;
+            }
+            return true;
+        }
         shapes::Shape m_shape;
         const Grid& m_sediment_grid;
         GridCoord m_shape_loc{0, 0};

@@ -29,7 +29,7 @@ struct Tetris {
             m_active_piece->down();
             m_active_piece->rotate();
             if (m_active_piece->m_landed) m_active_piece.reset();
-            m_tetrisview.update_grid(m_active_piece);
+            m_tetrisview.update_gridview(m_active_piece);
             std::this_thread::sleep_for(std::chrono::milliseconds(m_demo_cycle_time_ms));
         }
 
@@ -82,7 +82,7 @@ struct Tetris {
                 cycle_time_ms *= 0.99;
             }
 
-            m_tetrisview.update_grid(m_active_piece);
+            m_tetrisview.update_gridview(m_active_piece);
             if (m_active_piece.has_value()) input_loop(cycle_time_ms);
         }
         m_tetrisview.show_game_over();
@@ -138,7 +138,7 @@ struct Tetris {
                     take_input = false;
                     break;
             }
-            if(ch != ERR) m_tetrisview.update_grid(m_active_piece);
+            if(ch != ERR) m_tetrisview.update_gridview(m_active_piece);
             chrono::time_point end = chrono::steady_clock::now();
             elapsed = chrono::duration_cast<chrono::milliseconds>(end - start).count();
         } while (take_input && elapsed < cycle_time_ms);
