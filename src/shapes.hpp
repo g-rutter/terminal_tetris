@@ -7,26 +7,14 @@ namespace shapes {
     static const bool x = true;
     static const bool o = false;
 
-    struct Shape {
-        static std::array<const Grid, 4> get_rotations(const Grid form) {
-            Grid form90 = get_rotation(form);
-            Grid form180 = get_rotation(form90);
-            return std::array<const Grid, 4>{ form, form90, form180, get_rotation(form180) };
+    class Shape {
+        static std::array<const Grid, 4> get_rotations(Grid&& form) {
+            const Grid form90 = get_rotation(form);
+            const Grid form180 = get_rotation(form90);
+            return std::array<const Grid, 4>{ std::move(form), form90, form180, get_rotation(form180) };
         }
 
-        Shape(const Grid form)
-            : m_grids{get_rotations(form)},
-              m_grid{&m_grids[0]},
-              m_size{form.m_n_squares}
-              {}
-
-        void rotate() {
-            m_current_rotation ++;
-            m_current_rotation %= 4;
-            m_grid = &m_grids[m_current_rotation];
-        }
-
-        static const Grid get_rotation(const Grid current){
+        static const Grid get_rotation(const Grid& current){
             const GridCoord centre{current.m_grid_size.x, current.m_grid_size.y};
             const GridCoord inverted_centre{current.m_grid_size.y, current.m_grid_size.x};
             Grid rotated{{current.m_grid_size.y, current.m_grid_size.x}, current.m_occupied};
@@ -44,10 +32,21 @@ namespace shapes {
             return rotated;
         }
         
-        private:
-            const std::array<const Grid, 4> m_grids;
-            int m_current_rotation = 0;
+        const std::array<const Grid, 4> m_grids;
+        int m_current_rotation = 0;
+
         public:
+            Shape(Grid&& form)
+                : m_grids{get_rotations(std::move(form))},
+                  m_grid{&m_grids[0]},
+                  m_size{form.m_n_squares}
+                {}
+
+            void rotate() {
+                m_current_rotation ++;
+                m_current_rotation %= 4;
+                m_grid = &m_grids[m_current_rotation];
+            }
             const Grid* m_grid;
             const size_t m_size;
     };
