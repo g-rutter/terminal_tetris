@@ -17,7 +17,7 @@ class TetrisView {
             write_line("Controls", text_loc.x, text_loc.y, A_NORMAL);
             write_line("wasd/arrows - move", text_loc.x, text_loc.y + 2, A_NORMAL);
             write_line("w/up - rotate", text_loc.x, text_loc.y + 3, A_NORMAL);
-            write_line("space - drop piece", text_loc.x, text_loc.y + 4, A_NORMAL);
+            write_line("space - drop", text_loc.x, text_loc.y + 4, A_NORMAL);
             write_line("PRESS SPACE TO START", text_loc.x, text_loc.y + 6, A_UNDERLINE);
             update_gridview(std::nullopt);
             wrefresh(stdscr);
