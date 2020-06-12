@@ -70,7 +70,7 @@ class TetrisView {
             for(size_t i=0; i<5; i++) clear_line(m_grid.m_grid_size.x + 1, m_shape_loc.y + i);
 
             GridCoord global_coords;
-            const auto& shape_grid = *shape.m_grid;
+            const auto& shape_grid = shape.m_grids[0];
             for (auto &&i : shape_grid.true_indices()){
                 global_coords = shape_grid.to_2D(i) + m_shape_loc;
                 write_char('#', global_coords.x, global_coords.y, A_NORMAL);

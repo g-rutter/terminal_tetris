@@ -4,22 +4,23 @@
 #include "shapes.hpp"
 
 struct ActivePiece {
-    ActivePiece(shapes::Shape* shape, const Grid& sediment_grid)
+    ActivePiece(const shapes::Shape* shape, const Grid& sediment_grid)
         : m_shape{shape},
           m_sediment_grid{sediment_grid},
           m_global_grid{sediment_grid.m_grid_size, std::vector<bool>(sediment_grid.m_n_squares, false)},
           m_shadow_grid{sediment_grid.m_grid_size, std::vector<bool>(sediment_grid.m_n_squares, false)}
     {
-        m_shape_loc.x = (m_global_grid.m_grid_size.x - m_shape->m_grid->m_grid_size.x) / 2;
-        update_grids();
+        reset(m_shape);
     };
 
-    void reset(shapes::Shape* shape) {
-        m_shape->reset_rotation();
+    void reset(const shapes::Shape* shape) {
         m_shape = shape;
+        m_rotation = 0;
+        m_grid = &shape->m_grids[0];
         m_shape_loc.y = 0;
-        m_shape_loc.x = (m_global_grid.m_grid_size.x - shape->m_grid->m_grid_size.x) / 2;
+        m_shape_loc.x = (m_global_grid.m_grid_size.x - m_grid->m_grid_size.x) / 2;
         m_landed = false;
+        update_grids();
     }
 
     void down() {
@@ -57,9 +58,11 @@ struct ActivePiece {
     }
 
     void rotate() {
-        int recentre_amount = (m_shape->m_grid->m_grid_size.x - m_shape->m_grid->m_grid_size.y) / 2;
+        int recentre_amount = (m_grid->m_grid_size.x - m_grid->m_grid_size.y) / 2;
         do {
-            m_shape->rotate();
+            m_rotation ++;
+            m_rotation %= 4;
+            m_grid = &m_shape->m_grids[m_rotation];
             m_shape_loc.x += recentre_amount;
             m_shape_loc.y -= recentre_amount;
             recentre_amount = -recentre_amount;
@@ -88,13 +91,12 @@ struct ActivePiece {
     }
 
     private:
-        
         bool update_grid(const Grid& m_sediment_grid, Grid& update_grid, const GridCoord& shape_loc){
             GridCoord global_xy;
             size_t global_i;
 
-            for(size_t& local_i : m_shape->m_grid->true_indices()){
-                global_xy = m_shape->m_grid->to_2D(local_i) + shape_loc;
+            for(size_t& local_i : m_grid->true_indices()){
+                global_xy = m_grid->to_2D(local_i) + shape_loc;
                 global_i = update_grid.to_1D(global_xy);
                 if (global_i >= update_grid.m_n_squares) return false; // Fallen off bottom
                 else if (global_xy.x < 0 || global_xy.x >= update_grid.m_grid_size.x) return false ; // Off the sides
@@ -103,11 +105,13 @@ struct ActivePiece {
             }
             return true;
         }
-        shapes::Shape* m_shape;
+        const shapes::Shape* m_shape;
         const Grid& m_sediment_grid;
         GridCoord m_shape_loc{0, 0};
+        int m_rotation = 0;
 
     public:
         bool m_landed{false};
+        const Grid* m_grid;
         Grid m_global_grid, m_shadow_grid;
 };
