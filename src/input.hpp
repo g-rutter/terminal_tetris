@@ -27,20 +27,20 @@ struct InputManager {
     InputResult input_loop(int cycle_time_ms, InputMode mode) const {
         const chrono::time_point start = chrono::steady_clock::now();
         int elapsed, ch;
-        InputResult control_result{};
+        InputResult input_result{};
         do {
             ch = getch();
 
-            if (mode == InputMode::Play) control_result = play_input(ch);
-            if (mode == InputMode::SplashScreen) control_result = splashscreen_input(ch);
-            else if (mode == InputMode::Restart) control_result = endgame_input(ch);
+            if (mode == InputMode::Play) input_result = play_input(ch);
+            if (mode == InputMode::SplashScreen) input_result = splashscreen_input(ch);
+            else if (mode == InputMode::Restart) input_result = endgame_input(ch);
 
             if(ch != ERR) m_tetrisview.update_gridview(m_active_piece);
             chrono::time_point end = chrono::steady_clock::now();
             elapsed = chrono::duration_cast<chrono::milliseconds>(end - start).count();
-        } while (control_result == InputResult::Continue && elapsed < cycle_time_ms);
+        } while (input_result == InputResult::Continue && elapsed < cycle_time_ms);
 
-        return control_result;
+        return input_result;
     }
 
     private:

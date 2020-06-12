@@ -1,7 +1,7 @@
 #pragma once
 
 #include <curses.h>
-#include <thread>         // std::this_thread::sleep_for
+#include <thread>
 #include <chrono>
 #include <vector>
 #include <cstdio>
@@ -38,14 +38,14 @@ struct Tetris {
         int highscore = 0;
         int score;
         do {
-            score = run();
+            score = play();
             highscore = score > highscore? score : highscore;
             m_tetrisview.update_highscore(highscore);
             restart_result = m_controller.input_loop(std::numeric_limits<int>::max(), InputMode::Restart);
         } while(restart_result != InputResult::EndGame);
     }
 
-    int run() {
+    int play() {
         int score = 0;
         m_grid.zero();
         int cycle_time_ms = m_start_cycle_time_ms;
