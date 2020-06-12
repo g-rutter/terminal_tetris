@@ -12,16 +12,18 @@
 #include "view.hpp"
 #include "grid.hpp"
 #include "shapes.hpp"
+#include "input.hpp"
 
 using namespace std;
 
 struct Tetris {
-    Tetris(Grid& grid) : m_grid{grid}, m_tetrisview{grid} {};
+    Tetris(Grid& grid) : m_grid{grid}, m_tetrisview{grid}, m_controller{m_tetrisview, m_active_piece} {};
 
     void start() {
         m_tetrisview.splash_screen();
         size_t i_shape = 0;
-        while(getch() != ' ') {
+        InputResult splash_result, restart_result;
+        do {
             if(!m_active_piece) {
                 m_active_piece.emplace(shapes::all_shapes[i_shape++], m_grid);
                 i_shape %= shapes::all_shapes.size();
@@ -30,8 +32,8 @@ struct Tetris {
             m_active_piece->rotate();
             if (m_active_piece->m_landed) m_active_piece.reset();
             m_tetrisview.update_gridview(m_active_piece);
-            std::this_thread::sleep_for(std::chrono::milliseconds(m_demo_cycle_time_ms));
-        }
+            splash_result = m_controller.input_loop(m_start_cycle_time_ms, InputMode::SplashScreen);
+        } while (splash_result == InputResult::Continue);
 
         int highscore = 0;
         int score;
@@ -39,19 +41,8 @@ struct Tetris {
             score = run();
             highscore = score > highscore? score : highscore;
             m_tetrisview.update_highscore(highscore);
-        } while(restart_input());
-    }
-
-    bool restart_input() {
-        nodelay(stdscr, FALSE);
-        while(true) {
-            switch (getch()){
-                case 'r':
-                    return true;
-                case 'q':
-                    return false;
-            }
-        }
+            restart_result = m_controller.input_loop(std::numeric_limits<int>::max(), InputMode::Restart);
+        } while(restart_result != InputResult::EndGame);
     }
 
     int run() {
@@ -83,7 +74,7 @@ struct Tetris {
             }
 
             m_tetrisview.update_gridview(m_active_piece);
-            if (m_active_piece.has_value()) input_loop(cycle_time_ms);
+            if (m_active_piece.has_value()) m_controller.input_loop(cycle_time_ms, InputMode::Play);
         }
         m_tetrisview.show_game_over();
         return score;
@@ -109,45 +100,10 @@ struct Tetris {
         return score;
     }
 
-    void input_loop(int cycle_time_ms) {
-        const chrono::time_point start = chrono::steady_clock::now();
-        int elapsed;
-        bool take_input = true;
-        do {
-            int ch = getch();
-            switch (ch) {
-                case 'a':
-                case KEY_LEFT:
-                    m_active_piece->left();
-                    break;
-                case 'd':
-                case KEY_RIGHT:
-                    m_active_piece->right();
-                    break;
-                case 'w':
-                case KEY_UP:
-                    m_active_piece->rotate();
-                    break;
-                case 's':
-                case KEY_DOWN:
-                    m_active_piece->down();
-                    take_input = !m_active_piece->m_landed;
-                    break;
-                case ' ':
-                    m_active_piece->fall();
-                    take_input = false;
-                    break;
-            }
-            if(ch != ERR) m_tetrisview.update_gridview(m_active_piece);
-            chrono::time_point end = chrono::steady_clock::now();
-            elapsed = chrono::duration_cast<chrono::milliseconds>(end - start).count();
-        } while (take_input && elapsed < cycle_time_ms);
-    }
-
     private:
         Grid& m_grid;
         const TetrisView m_tetrisview;        
         const int m_start_cycle_time_ms{500};
-        const int m_demo_cycle_time_ms{500};
         std::optional<ActivePiece> m_active_piece{};
+        const InputManager m_controller;
 };
