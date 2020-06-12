@@ -81,9 +81,9 @@ struct Tetris {
                 m_tetrisview.update_score(score, cycle_time_ms);
                 m_tetrisview.update_next_shape(shapes::all_shapes[next_shape]);
             }
-            m_active_piece.down();
             m_tetrisview.update_gridview(m_active_piece);
             input_manager.input_loop(cycle_time_ms);
+            m_active_piece.down();
         }
         m_tetrisview.show_game_over();
         return score;
