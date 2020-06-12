@@ -19,11 +19,10 @@ class TetrisView {
             write_line("w/up - rotate", text_loc.x, text_loc.y + 3, A_NORMAL);
             write_line("space - drop", text_loc.x, text_loc.y + 4, A_NORMAL);
             write_line("PRESS SPACE TO START", text_loc.x, text_loc.y + 6, A_UNDERLINE);
-            update_gridview(std::nullopt);
             wrefresh(stdscr);
         }
 
-        void update_gridview(const std::optional<ActivePiece>& active_piece) const {
+        void update_gridview(const ActivePiece& active_piece) const {
             GridCoord grid_coords;
             char ch;
             size_t effect;
@@ -35,8 +34,8 @@ class TetrisView {
                     effect = A_REVERSE;
                     ch = ' ';
                 }
-                else if (active_piece.has_value() && active_piece->m_global_grid.m_occupied.at(i)) ch = '#';
-                else if (active_piece.has_value() && active_piece->m_shadow_grid.m_occupied.at(i)) ch = 'x';
+                else if (active_piece.m_global_grid.m_occupied.at(i)) ch = '#';
+                else if (active_piece.m_shadow_grid.m_occupied.at(i)) ch = 'x';
                 else {
                     is_border = (grid_coords.x == 0
                                  || grid_coords.x + 1 == m_grid.m_grid_size.x

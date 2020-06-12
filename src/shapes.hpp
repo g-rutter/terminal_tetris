@@ -32,7 +32,7 @@ namespace shapes {
             return rotated;
         }
         
-        const std::array<const Grid, 4> m_grids;
+        std::array<const Grid, 4> m_grids;
         int m_current_rotation = 0;
 
         public:
@@ -47,42 +47,47 @@ namespace shapes {
                 m_current_rotation %= 4;
                 m_grid = &m_grids[m_current_rotation];
             }
+
+            void reset_rotation() {
+                m_current_rotation = 0;
+                m_grid = &m_grids[m_current_rotation];
+            }
             const Grid* m_grid;
             const size_t m_size;
     };
 
-    const Shape L(
+    Shape L(
         Grid(GridSize(3), 
              {o, x, o,
               o, x, o,
               o, x, x})
     );
 
-    const Shape T(
+    Shape T(
         Grid(GridSize(3),
              {o, x, o,
               x, x, x,
               o, o, o})
     );
 
-    const Shape BackwardsL(
+    Shape BackwardsL(
         Grid(GridSize(3),
              {o, x, o,
               o, x, o,
               x, x, o})
     );
 
-    const Shape Box(
+    Shape Box(
         Grid(GridSize(2),
              {x, x,
               x, x})
     );
 
-    const Shape I(
+    Shape I(
         Grid(GridSize(1, 4), {x, x, x, x})
     );
 
-    const std::array all_shapes = {L, T, BackwardsL, Box, I};
+    std::array all_shapes = {L, T, BackwardsL, Box, I};
     
     int random_shape() {
         return rand() % all_shapes.size();

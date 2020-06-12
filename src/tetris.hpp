@@ -17,14 +17,15 @@
 using namespace std;
 
 struct Tetris {
-    Tetris(Grid& grid) : m_grid{grid}, m_tetrisview{grid} {};
+    Tetris(Grid& grid) : m_grid{grid},
+                         m_tetrisview{grid},
+                         m_active_piece{&shapes::L, m_grid} {};
 
     void start() {
         splash();
         
         InputResult restart_result;
-        std::optional<ActivePiece> restart_piece = nullopt;
-        InputManager<InputMode::Restart> restart_input_manager{m_tetrisview, restart_piece};
+        InputManager<InputMode::Restart> restart_input_manager{m_tetrisview, m_active_piece};
 
         int highscore = 0;
         int score;
@@ -40,18 +41,16 @@ struct Tetris {
         m_tetrisview.splash_screen();
         size_t i_shape = 0;
         InputResult splash_result;
-        std::optional<ActivePiece> active_piece = ActivePiece(shapes::all_shapes[shapes::random_shape()], m_grid);
-        InputManager<InputMode::SplashScreen> splash_input_manager{m_tetrisview, active_piece};
+        InputManager<InputMode::SplashScreen> splash_input_manager{m_tetrisview, m_active_piece};
 
         do {
-            if(!active_piece) {
-                active_piece.emplace(shapes::all_shapes[i_shape++], m_grid);
+            m_active_piece.down();
+            m_active_piece.rotate();
+            if (m_active_piece.m_landed) {
+                m_active_piece.reset(&shapes::all_shapes[i_shape++]);
                 i_shape %= shapes::all_shapes.size();
             }
-            active_piece->down();
-            active_piece->rotate();
-            if (active_piece->m_landed) active_piece.reset();
-            m_tetrisview.update_gridview(active_piece);
+            m_tetrisview.update_gridview(m_active_piece);
             splash_result = splash_input_manager.input_loop(m_start_cycle_time_ms);
         } while (splash_result == InputResult::Continue);
     }
@@ -62,29 +61,29 @@ struct Tetris {
         int cycle_time_ms = m_start_cycle_time_ms;
         m_tetrisview.hide_game_over();
 
-        std::optional<ActivePiece> active_piece = ActivePiece(shapes::all_shapes[shapes::random_shape()], m_grid);
+        m_active_piece.reset(&shapes::all_shapes[0]);
         int next_shape = shapes::random_shape();
-        InputManager<InputMode::Play> input_manager{m_tetrisview, active_piece};
+        InputManager<InputMode::Play> input_manager{m_tetrisview, m_active_piece};
 
         m_tetrisview.update_score(score, cycle_time_ms);
         m_tetrisview.update_next_shape(shapes::all_shapes[next_shape]);
 
         while(true) {
-            if(active_piece->m_landed) {
-                m_grid.absorb(active_piece->m_global_grid);
+            if(m_active_piece.m_landed) {
+                m_grid.absorb(m_active_piece.m_global_grid);
                 score += remove_rows();
                 cycle_time_ms *= 0.99;
 
-                active_piece.emplace(shapes::all_shapes[shapes::random_shape()], m_grid);
+                m_active_piece.reset(&shapes::all_shapes[next_shape]);
                 next_shape = shapes::random_shape();
 
-                if(!active_piece->update_grids()) break; // New piece being immediately invalid marks end of game.
+                if(!m_active_piece.update_grids()) break; // New piece being immediately invalid marks end of game.
                 m_tetrisview.update_score(score, cycle_time_ms);
                 m_tetrisview.update_next_shape(shapes::all_shapes[next_shape]);
             }
-            active_piece->down();
-            m_tetrisview.update_gridview(active_piece);
-            if (active_piece.has_value()) input_manager.input_loop(cycle_time_ms);
+            m_active_piece.down();
+            m_tetrisview.update_gridview(m_active_piece);
+            input_manager.input_loop(cycle_time_ms);
         }
         m_tetrisview.show_game_over();
         return score;
@@ -114,4 +113,5 @@ struct Tetris {
         Grid& m_grid;
         const TetrisView m_tetrisview;        
         const int m_start_cycle_time_ms{500};
+        ActivePiece m_active_piece;
 };

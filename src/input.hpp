@@ -22,7 +22,8 @@ enum class InputResult{
 
 template<InputMode mode>
 struct InputManager {
-    InputManager(const TetrisView& tetrisview, std::optional<ActivePiece>& active_piece)
+    // TODO not ideal since active_piece is only needed for InputMode::Play:
+    InputManager(const TetrisView& tetrisview, ActivePiece& active_piece)
         : m_tetrisview{tetrisview}, m_active_piece{active_piece} {}
 
     InputResult input_loop(int cycle_time_ms) const {
@@ -49,22 +50,22 @@ struct InputManager {
             switch (ch) {
                 case 'a':
                 case KEY_LEFT:
-                    m_active_piece->left();
+                    m_active_piece.left();
                     return InputResult::Continue;
                 case 'd':
                 case KEY_RIGHT:
-                    m_active_piece->right();
+                    m_active_piece.right();
                     return InputResult::Continue;
                 case 'w':
                 case KEY_UP:
-                    m_active_piece->rotate();
+                    m_active_piece.rotate();
                     return InputResult::Continue;
                 case 's':
                 case KEY_DOWN:
-                    m_active_piece->down();
-                    return m_active_piece->m_landed ? InputResult::EndCycle : InputResult::Continue;
+                    m_active_piece.down();
+                    return m_active_piece.m_landed ? InputResult::EndCycle : InputResult::Continue;
                 case ' ':
-                    m_active_piece->fall();
+                    m_active_piece.fall();
                     return InputResult::EndCycle;
                 default:
                     return InputResult::Continue;
@@ -91,5 +92,5 @@ struct InputManager {
             }
         }
         const TetrisView& m_tetrisview;
-        std::optional<ActivePiece>& m_active_piece;
+        ActivePiece& m_active_piece; // TODO Replace with something compile time and safer
 };

@@ -4,15 +4,23 @@
 #include "shapes.hpp"
 
 struct ActivePiece {
-    ActivePiece(const shapes::Shape shape, const Grid& sediment_grid)
+    ActivePiece(shapes::Shape* shape, const Grid& sediment_grid)
         : m_shape{shape},
           m_sediment_grid{sediment_grid},
           m_global_grid{sediment_grid.m_grid_size, std::vector<bool>(sediment_grid.m_n_squares, false)},
           m_shadow_grid{sediment_grid.m_grid_size, std::vector<bool>(sediment_grid.m_n_squares, false)}
     {
-        m_shape_loc.x = (m_global_grid.m_grid_size.x - shape.m_grid->m_grid_size.x) / 2;
+        m_shape_loc.x = (m_global_grid.m_grid_size.x - m_shape->m_grid->m_grid_size.x) / 2;
         update_grids();
     };
+
+    void reset(shapes::Shape* shape) {
+        m_shape->reset_rotation();
+        m_shape = shape;
+        m_shape_loc.y = 0;
+        m_shape_loc.x = (m_global_grid.m_grid_size.x - shape->m_grid->m_grid_size.x) / 2;
+        m_landed = false;
+    }
 
     void down() {
         m_shape_loc.y++;
@@ -49,9 +57,9 @@ struct ActivePiece {
     }
 
     void rotate() {
-        int recentre_amount = (m_shape.m_grid->m_grid_size.x - m_shape.m_grid->m_grid_size.y) / 2;
+        int recentre_amount = (m_shape->m_grid->m_grid_size.x - m_shape->m_grid->m_grid_size.y) / 2;
         do {
-            m_shape.rotate();
+            m_shape->rotate();
             m_shape_loc.x += recentre_amount;
             m_shape_loc.y -= recentre_amount;
             recentre_amount = -recentre_amount;
@@ -63,17 +71,17 @@ struct ActivePiece {
         // bool return code denotes VALIDITY OF STATE.
         // Update does not complete if state is invalid.
         std::fill(m_global_grid.m_occupied.begin(), m_global_grid.m_occupied.end(), false);
-        bool valid = update_grid(m_sediment_grid, m_global_grid, m_shape, m_shape_loc);
+        bool valid = update_grid(m_sediment_grid, m_global_grid, m_shape_loc);
 
         if (valid) {
             GridCoord shadow_loc = {m_shape_loc.x, m_shape_loc.y + 1};
-            while(update_grid(m_sediment_grid, m_shadow_grid, m_shape, shadow_loc)) {
+            while(update_grid(m_sediment_grid, m_shadow_grid, shadow_loc)) {
                 shadow_loc.y++;
             }
             shadow_loc.y--;
             std::fill(m_shadow_grid.m_occupied.begin(), m_shadow_grid.m_occupied.end(), false);
             if (shadow_loc.y - 3 > m_shape_loc.y) { // Don't show shadow if it might be visually distracting.
-                update_grid(m_sediment_grid, m_shadow_grid, m_shape, shadow_loc);
+                update_grid(m_sediment_grid, m_shadow_grid, shadow_loc);
             }
         } 
         return valid;
@@ -81,12 +89,12 @@ struct ActivePiece {
 
     private:
         
-        bool update_grid(const Grid& m_sediment_grid, Grid& update_grid, const shapes::Shape& shape, const GridCoord& shape_loc){
+        bool update_grid(const Grid& m_sediment_grid, Grid& update_grid, const GridCoord& shape_loc){
             GridCoord global_xy;
             size_t global_i;
 
-            for(size_t& local_i : shape.m_grid->true_indices()){
-                global_xy = shape.m_grid->to_2D(local_i) + shape_loc;
+            for(size_t& local_i : m_shape->m_grid->true_indices()){
+                global_xy = m_shape->m_grid->to_2D(local_i) + shape_loc;
                 global_i = update_grid.to_1D(global_xy);
                 if (global_i >= update_grid.m_n_squares) return false; // Fallen off bottom
                 else if (global_xy.x < 0 || global_xy.x >= update_grid.m_grid_size.x) return false ; // Off the sides
@@ -95,7 +103,7 @@ struct ActivePiece {
             }
             return true;
         }
-        shapes::Shape m_shape;
+        shapes::Shape* m_shape;
         const Grid& m_sediment_grid;
         GridCoord m_shape_loc{0, 0};
 
