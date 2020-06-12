@@ -20,20 +20,21 @@ enum class InputResult{
     EndGame   // Terminate the program
 };
 
+template<InputMode mode>
 struct InputManager {
     InputManager(const TetrisView& tetrisview, std::optional<ActivePiece>& active_piece)
         : m_tetrisview{tetrisview}, m_active_piece{active_piece} {}
 
-    InputResult input_loop(int cycle_time_ms, InputMode mode) const {
+    InputResult input_loop(int cycle_time_ms) const {
         const chrono::time_point start = chrono::steady_clock::now();
         int elapsed, ch;
         InputResult input_result{};
         do {
             ch = getch();
 
-            if (mode == InputMode::Play) input_result = play_input(ch);
-            if (mode == InputMode::SplashScreen) input_result = splashscreen_input(ch);
-            else if (mode == InputMode::Restart) input_result = endgame_input(ch);
+            if constexpr(mode == InputMode::Play) input_result = play_input(ch);
+            if constexpr(mode == InputMode::SplashScreen) input_result = splashscreen_input(ch);
+            else if constexpr(mode == InputMode::Restart) input_result = endgame_input(ch);
 
             if(ch != ERR) m_tetrisview.update_gridview(m_active_piece);
             chrono::time_point end = chrono::steady_clock::now();
