@@ -39,19 +39,19 @@ struct Tetris {
 
     void splash() {
         m_tetrisview.splash_screen();
-        size_t i_shape = 0;
+        size_t i_shape = 1;
         InputResult splash_result;
         InputManager<InputMode::SplashScreen> splash_input_manager{m_tetrisview, m_active_piece};
 
         do {
-            m_active_piece.down();
-            m_active_piece.rotate();
-            if (m_active_piece.m_landed) {
+            if(m_active_piece.m_landed) {
                 m_active_piece.reset(&shapes::all_shapes[i_shape++]);
                 i_shape %= shapes::all_shapes.size();
             }
             m_tetrisview.update_gridview(m_active_piece);
             splash_result = splash_input_manager.input_loop(m_start_cycle_time_ms);
+            m_active_piece.down();
+            m_active_piece.rotate();
         } while (splash_result == InputResult::Continue);
     }
 
