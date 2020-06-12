@@ -85,6 +85,7 @@ struct Tetris {
             input_manager.input_loop(cycle_time_ms);
             m_active_piece.down();
         }
+        m_tetrisview.update_gridview(m_active_piece); // Show end "collision" state as final view of game.
         m_tetrisview.show_game_over();
         return score;
     }
