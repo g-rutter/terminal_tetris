@@ -5,8 +5,6 @@
 #include "view.hpp"
 #include "active_piece.hpp"
 
-using namespace std;
-
 enum class InputMode{
     SplashScreen,
     Play,
@@ -27,7 +25,7 @@ struct InputManager {
         : m_tetrisview{tetrisview}, m_active_piece{active_piece} {}
 
     InputResult input_loop(int cycle_time_ms) const {
-        const chrono::time_point start = chrono::steady_clock::now();
+        const std::chrono::time_point start = std::chrono::steady_clock::now();
         int elapsed, ch;
         InputResult input_result{};
         do {
@@ -39,8 +37,8 @@ struct InputManager {
             }
             if constexpr(mode == InputMode::SplashScreen) input_result = splashscreen_input(ch);
             else if constexpr(mode == InputMode::Restart) input_result = endgame_input(ch);
-            chrono::time_point end = chrono::steady_clock::now();
-            elapsed = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+            std::chrono::time_point end = std::chrono::steady_clock::now();
+            elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
         } while (input_result == InputResult::Continue && elapsed < cycle_time_ms);
 
         return input_result;

@@ -14,8 +14,6 @@
 #include "shapes.hpp"
 #include "input.hpp"
 
-using namespace std;
-
 struct Tetris {
     Tetris(Grid& grid) : m_grid{grid},
                          m_tetrisview{grid},
