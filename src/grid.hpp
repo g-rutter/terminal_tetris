@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <math.h>
+#include <algorithm>
+#include <functional>
 
 struct GridSize{
     explicit constexpr GridSize(const size_t square_width) : x{square_width}, y{square_width} {}
