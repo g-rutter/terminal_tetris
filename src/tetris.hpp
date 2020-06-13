@@ -111,5 +111,5 @@ struct Tetris {
         const TetrisView m_tetrisview;        
         const int m_start_cycle_time_ms{500};
         ActivePiece m_active_piece;
-        InputManager m_input_manager;
+        const InputManager m_input_manager;
 };
