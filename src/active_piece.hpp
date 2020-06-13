@@ -13,13 +13,14 @@ struct ActivePiece {
         reset(m_shape);
     };
 
-    void reset(const shapes::Shape* shape) {
+    void reset(const shapes::Shape* shape) { // Feed a new shape in to be the active piece.
         m_shape = shape;
         m_rotation = 0;
         m_grid = &shape->m_grids[0];
         m_shape_loc.y = 0;
         m_shape_loc.x = (m_global_grid.m_grid_size.x - m_grid->m_grid_size.x) / 2;
         m_landed = false;
+        m_recentre_amount = (m_grid->m_grid_size.x - m_grid->m_grid_size.y) / 2;
         update_grids();
     }
 
@@ -58,14 +59,17 @@ struct ActivePiece {
     }
 
     void rotate() {
-        int recentre_amount = (m_grid->m_grid_size.x - m_grid->m_grid_size.y) / 2;
         do {
             m_rotation ++;
             m_rotation %= 4;
             m_grid = &m_shape->m_grids[m_rotation];
-            m_shape_loc.x += recentre_amount;
-            m_shape_loc.y -= recentre_amount;
-            recentre_amount = -recentre_amount;
+            if (m_rotation % 2) {
+                m_shape_loc.x += m_recentre_amount;
+                m_shape_loc.y -= m_recentre_amount;
+            } else {
+                m_shape_loc.x -= m_recentre_amount;
+                m_shape_loc.y += m_recentre_amount;
+            }
         } while (!update_grids());
     }
 
@@ -109,6 +113,7 @@ struct ActivePiece {
         const Grid& m_sediment_grid;
         GridCoord m_shape_loc{0, 0};
         int m_rotation = 0;
+        int m_recentre_amount = 0;
 
     public:
         bool m_landed{false};
