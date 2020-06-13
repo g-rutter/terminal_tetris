@@ -65,8 +65,8 @@ namespace shapes {
 
     const Shape Box(
         Grid(GridSize(2),
-             {x, x,
-              x, x})
+            {x, x,
+             x, x})
     );
 
     const Shape I(
