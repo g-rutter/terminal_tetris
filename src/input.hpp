@@ -45,7 +45,7 @@ struct InputManager {
     }
 
     private:
-        InputResult play_input(const int& ch) const {
+        InputResult play_input(const int ch) const {
             switch (ch) {
                 case 'a':
                 case KEY_LEFT:
@@ -71,7 +71,7 @@ struct InputManager {
             }
         }
 
-        InputResult splashscreen_input(const int& ch) const {
+        InputResult splashscreen_input(const int ch) const {
             switch (ch) {
                 case ' ':
                     return InputResult::EndMode;
@@ -80,7 +80,7 @@ struct InputManager {
             }
         }
 
-        InputResult endgame_input(const int& ch) const {
+        InputResult endgame_input(const int ch) const {
             switch (ch) {
                 case 'r':
                     return InputResult::EndMode;
