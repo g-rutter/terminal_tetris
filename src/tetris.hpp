@@ -61,7 +61,7 @@ struct Tetris {
         m_active_piece.reset(&shapes::all_shapes[0]);
         int next_shape = shapes::random_shape();
 
-        m_tetrisview.update_score(score, cycle_time_ms);
+        m_tetrisview.update_status(score, cycle_time_ms);
         m_tetrisview.update_next_shape(shapes::all_shapes[next_shape]);
 
         while(true) {
@@ -74,7 +74,7 @@ struct Tetris {
                 next_shape = shapes::random_shape();
 
                 if(!m_active_piece.update_grids()) break; // New piece being immediately invalid marks end of game.
-                m_tetrisview.update_score(score, cycle_time_ms);
+                m_tetrisview.update_status(score, cycle_time_ms);
                 m_tetrisview.update_next_shape(shapes::all_shapes[next_shape]);
             }
             m_tetrisview.update_gridview(m_active_piece);

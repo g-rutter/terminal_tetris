@@ -1,6 +1,6 @@
 #pragma once
 #include "active_piece.hpp"
-
+#include <sstream>
 
 class TetrisView {
     public:
@@ -48,18 +48,18 @@ class TetrisView {
             wrefresh(stdscr);
         }
 
-        void update_score(const int score, const int cycle_time_ms) const {
+        void update_status(const int score, const int cycle_time_ms) const {
             clear_line(0, m_grid.m_grid_size.y + 1);
             clear_line(0, m_grid.m_grid_size.y + 2);
-            char score_str[100];
-            sprintf(score_str, "Score: %d\nDrop every: %d ms", score, cycle_time_ms);
-            write_line(score_str, 0, m_grid.m_grid_size.y + 1, A_NORMAL);
+            std::stringstream status;
+            status << "Score: " << score << "\nDrop every: " << cycle_time_ms << "ms";
+            write_line(status.str().c_str(), 0, m_grid.m_grid_size.y + 1, A_NORMAL);
         }
 
         void update_highscore(const int score) const {
-            char highscore_str[100];
-            sprintf(highscore_str, "Highscore: %d", score);
-            write_line(highscore_str, 0, m_grid.m_grid_size.y + 3, A_NORMAL);
+            std::stringstream status;
+            status << "Highscore: " << score;
+            write_line(status.str().c_str(), 0, m_grid.m_grid_size.y + 3, A_NORMAL);
         }
 
         void update_next_shape(const shapes::Shape& shape) const {
@@ -99,7 +99,7 @@ class TetrisView {
             clrtoeol();
         }
 
-        void write_line(const char* str, const int x, const int y, const size_t effect) const {
+        void write_line(const char * str, const int x, const int y, const size_t effect) const {
             attroff(A_INVIS);
             attron(effect);
             mvprintw(y, x, str);
